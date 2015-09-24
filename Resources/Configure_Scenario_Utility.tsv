@@ -1,0 +1,174 @@
+*Settings*							
+							
+*Keyword*							
+Start Platform Component	[Arguments]	${ComponentName}					
+	Log	This keywords Starts an already installed component on the platform.					
+	${isActive}	DPlayer	Is Active	${ComponentName}			
+	Run Keyword If	'${isActive}'=='0'	Dplayer	Start Component	${ComponentName}		
+	Run Keyword If	'${isActive}'=='1'	Log	Component is already running			
+	Run Keyword If	'${isActive}'=='0'	Dplayer	Wait For Component To Start	${ComponentName}		
+							
+Stop Platform Component	[Arguments]	${ComponentName}					
+	Log	This keywords stops an already started component on the platform.					
+	${isActive}	DPlayer	Is Active	${ComponentName}			
+	Run Keyword If	'${isActive}'=='1'	Dplayer	Stop Component	${ComponentName}		
+	Run Keyword If	'${isActive}'=='0'	Log	Component is already stopped.			
+	Run Keyword If	'${isActive}'=='1'	DPlayer	Wait For Component To Stop	${ComponentName}		
+							
+Restart Platform Component	[Arguments]	${CompName}					
+	Stop Platform Component	${CompName}					
+	Start Platform Component	${CompName}					
+							
+Set Logs, Bin, DB, Work directory paths In Mkv.init to specific directory path	[Arguments]	${ComponentName}	${DirectoryPath}				
+	@{enabledPriority}	DPlayer List	getDmn	${ComponentName}	${COMMON DAEMON NAME}		
+	Run Keyword If	'@{enabledPriority}[0]'=='0'	DPlayer	setDmn	${ComponentName}	${COMMON DAEMON NAME}	1
+	...	0					
+	DPlayer	Set Component Configuration	${ComponentName}	LogsDirectory	${DirectoryPath}		
+	DPlayer	Set Component Configuration	${ComponentName}	ExecutableDirectory	${DirectoryPath}		
+	DPlayer	Set Component Configuration	${ComponentName}	DbDirectory	${DirectoryPath}		
+	DPlayer	Set Component Configuration	${ComponentName}	WorkingDirectory	${DirectoryPath}		
+							
+Clear LOGS Directory	[Arguments]	${DirectoryPath}					
+	${dirFullName}=	Set Variable	${DirectoryPath}${/}LOGS				
+	${status}=	Run Keyword And Return Status	Should Exist	${dirFullName}			
+	Run Keyword If	${status}	Remove Directory	${dirFullName}	recursive=False		
+							
+Copy Executable In Component Working Directory	[Arguments]	${Executable}	${ComponentName}	${DirectoryPath}			
+	OperatingSystem.Copy File	${COMMON DPLAYER FILES DIR}${/}${Executable}	${DirectoryPath}${/}				
+	DPlayer	Set Component Configuration	${ComponentName}	Executable	${Executable}		
+	DPlayer	Set Component Configuration	${ComponentName}	AddExtension	0		
+							
+Connect Components	[Arguments]	${Comp1}	${Comp2}	${Timeout}=${EMPTY}			
+	${waitTimeout}=	Set Variable If	'${Timeout}'=='${EMPTY}'	${WAIT CONNECT TIMEOUT MSEC}	${Timeout}		
+	${connectionType}=	Set Variable	InOut				
+	${status1}	${message1}=	Run Keyword And Ignore Error	DPlayer	Get Connection Type	${Comp1}	${Comp2}
+	${status2}	${message2}=	Run Keyword And Ignore Error	DPlayer	Get Connection Type	${Comp2}	${Comp1}
+	Run Keyword If	'${message1}'=='unknown' and '${message2}'=='unknown'	DPlayer	Create Connection	${Comp1}	${Comp2}	${connectionType}
+	...	${waitTimeout}					
+	DPlayer	Wait For Connection Setup	${Comp1}	${Comp2}	${waitTimeout}		
+							
+Copy Component Mkv.init from Daemon Wrk directory to Suite Wrk Dir	[Arguments]	${ComponentName}	${DirectoryPath}				
+	OperatingSystem.Copy File	${COMMON DAEMON WRK DIRECTORY PATH}${/}${ComponentName}${/}*.init	${DirectoryPath}				
+							
+Get FieldNameValue In a Single List	[Arguments]	${FieldNameList}	${FieldValueList}				
+	@{FieldNameValueList}=	Create List	@{EMPTY}				
+	${statusFieldName}	Run Keyword And Return Status	Should Be String	${FieldNameList}			
+	${statusFieldValue}	Run Keyword And Return Status	Should Be String	${FieldValueList}			
+	@{ArgumentNameList}=	Run Keyword If	'${statusFieldName}'=='True'	Split String	${FieldNameList}	|	
+	...	ELSE IF	'${statusFieldName}'!='True'	Convert To List	${FieldNameList}		
+	@{ArgumentValueList}=	Run Keyword If	'${statusFieldValue}'=='True'	Split String	${FieldValueList}	|	
+	...	ELSE IF	'${statusFieldValue}'!='True'	Convert To List	${FieldValueList}		
+	${noOfFieldNames}=	Get Length	${ArgumentNameList}				
+	${noOfFieldValues}=	Get Length	${ArgumentValueList}				
+	Should Be True	'${noOfFieldNames}'=='${noOfFieldValues}'					
+	: FOR	${n}	IN RANGE	0	${noOfFieldNames}		
+		Append To List	${FieldNameValueList}	@{ArgumentNameList}[${n}]			
+		Append To List	${FieldNameValueList}	@{ArgumentValueList}[${n}]			
+	[Return]	@{FieldNameValueList}					
+							
+Get FieldNameValue In a Single List to verify field values in a record	[Arguments]	${FieldNameList}	${FieldValueList}				
+	@{FieldNameValueList}=	Create List	@{EMPTY}				
+	${statusFieldName}	Run Keyword And Return Status	Should Be String	${FieldNameList}			
+	${statusFieldValue}	Run Keyword And Return Status	Should Be String	${FieldValueList}			
+	@{ArgumentNameList}=	Run Keyword If	'${statusFieldName}'=='True'	Split String	${FieldNameList}	|	
+	...	ELSE IF	'${statusFieldName}'!='True'	Convert To List	${FieldNameList}		
+	@{ArgumentValueList}=	Run Keyword If	'${statusFieldValue}'=='True'	Split String	${FieldValueList}	|	
+	...	ELSE IF	'${statusFieldValue}'!='True'	Convert To List	${FieldValueList}		
+	${noOfFieldNames}=	Get Length	${ArgumentNameList}				
+	${noOfFieldValues}=	Get Length	${ArgumentValueList}				
+	Should Be True	'${noOfFieldNames}'=='${noOfFieldValues}'					
+	: FOR	${n}	IN RANGE	0	${noOfFieldNames}		
+		Append To List	${FieldNameValueList}	@{ArgumentNameList}[${n}]			
+		Append To List	${FieldNameValueList}	==			
+		Append To List	${FieldNameValueList}	@{ArgumentValueList}[${n}]			
+	[Return]	@{FieldNameValueList}					
+							
+Set Component MKV Init	[Arguments]	${ComponentName}	@{SettingNameValue}				
+	@{enabledPriority}	DPlayer List	getDmn	${ComponentName}	${COMMON DAEMON NAME}		
+	Run Keyword If	'@{enabledPriority}[0]'=='0'	DPlayer	setDmn	${ComponentName}	${COMMON DAEMON NAME}	1
+	...	0					
+	Remove All the existing settings From MKV INIT	${ComponentName}					
+	DPlayer	Set Component Setting	${ComponentName}	@{SettingNameValue}			
+							
+Remove All the existing settings From MKV INIT	[Arguments]	${ComponentName}					
+	${status}	${existingSettings}=	Run Keyword And Ignore Error	DPlayer	Get All Component Settings	${ComponentName}	
+	@{existingSettingsList}	Run Keyword If	'${status}'=='PASS'	Split String	${existingSettings}	${SPACE}	
+	${length}=	Run Keyword If	'${status}'=='PASS'	Get Length	${existingSettingsList}		
+	...	ELSE	Set Variable	0			
+	: FOR	${n}	IN RANGE	0	${length}	2	
+		${settingName}=	Set Variable	@{existingSettingsList}[${n}]			
+		Run Keyword And Ignore Error	DPlayer	Remove Component Setting	${ComponentName}	${settingName}	
+							
+Remove current settings From MKV INIT	[Arguments]	${ComponentName}					
+	${length}=	Get Length	${MKV_INIT_REFDATA}				
+	: FOR	${n}	IN RANGE	0	${length}	2	
+		${settingName}=	Set Variable	@{MKV_INIT_REFDATA}[${n}]			
+		Run Keyword And Ignore Error	DPlayer	Remove Component Setting	${ComponentName}	${settingName}	
+							
+Copy DPlayer Script File From Suite Folder to the Working dir	[Arguments]	${FileName}	${Destination}				
+	OperatingSystem.Copy File	${FileName}	${Destination}${/}				
+							
+Publish Chain From External Source	[Arguments]	${Source}	${Currency}	${Type}	${Table}	${Chain}	
+	${chainName}=	Set Variable	${Currency}.${Table}.${Source}.${Chain}				
+	Call Function Expected Like Result	${Source}	PublishChain	_	${TIMEOUT_SEC}	Ok	typeName
+	...	${Type}	chainName	${chainName}			
+							
+Publish Record From External Source	[Arguments]	${Source}	${Currency}	${Type}	${Table}	${RecordId}	
+	${recordName}=	Set Variable	${Currency}.${Table}.${Source}.${RecordId}				
+	Call Function Expected Like Result	${Source}	PublishRecord	_	${TIMEOUT_SEC}	Ok	typeName
+	...	${Type}	recordName	${recordName}			
+							
+Publish Type From External Source	[Arguments]	${Source}	${Type}	${FieldNameList}	${FieldTypeList}		
+	${fieldNameCount}=	Get Length	${FieldNameList}				
+	${fieldTypeCount}=	Get Length	${FieldTypeList}				
+	Should Be True	'${fieldNameCount}'=='${fieldTypeCount}'					
+	${typeArgs}=	Set Variable	${EMPTY}				
+	: FOR	${n}	IN RANGE	0	${fieldNameCount}		
+		${fieldName}=	Set Variable	@{FieldNameList}[${n}]			
+		${fieldType}=	Set Variable	@{FieldTypeList}[${n}]			
+		Comment	${fieldType}=	Run Keyword If	'${fieldType}'=='STR'	Replace String	${fieldType}
+		...	STR	String			
+		...	ELSE IF	'${fieldType}'=='INT'	Replace String	${fieldType}	INT
+		...	Integer				
+		...	ELSE IF	'${fieldType}'=='DATE'	Replace String	${fieldType}	DATE
+		...	Date				
+		...	ELSE IF	'${fieldType}'=='REAL'	Replace String	${fieldType}	REAL
+		...	Real				
+		...	ELSE IF	'${fieldType}'=='TIME'	Replace String	${fieldType}	TIME
+		...	Time				
+		${typeArgs}=	Run Keyword If	'${typeArgs}'=='${EMPTY}'	Catenate	{${fieldName}}	${fieldType}
+		...	ELSE IF	'${typeArgs}'!='${EMPTY}'	Catenate	${typeArgs}	{${fieldName}}
+		...	${fieldType}				
+	Call Function Expected Like Result	${Source}	PublishType	_	${TIMEOUT_SEC}	Ok	typeName
+	...	${Type}	typeArgs	"""${typeArgs}"""			
+							
+Add Record To Chain	[Arguments]	${Source}	${chainName}	${recordName}			
+	Call Function Expected Like Result	${Source}	AddRecordToChain	_	${TIMEOUT_SEC}	Ok	recordName
+	...	${recordName}	chainName	${chainName}			
+							
+Disconnect Components	[Arguments]	${Comp1}	${Comp2}	${Timeout}=${EMPTY}			
+	${waitTimeout}=	Set Variable If	'${Timeout}'=='${EMPTY}'	${WAIT CONNECT TIMEOUT MSEC}	${Timeout}		
+	${status1}	${message1}=	Run Keyword And Ignore Error	DPlayer	Get Connection Type	${Comp1}	${Comp2}
+	${status2}	${message2}=	Run Keyword And Ignore Error	DPlayer	Get Connection Type	${Comp2}	${Comp1}
+	Run Keyword If	'${message1}'!='unknown'	DPlayer	Remove Connection	${Comp1}	${Comp2}	${waitTimeout}
+	Run Keyword If	'${message2}'!='unknown'	DPlayer	Remove Connection	${Comp2}	${Comp1}	${waitTimeout}
+							
+UnPublish Record From External Source	[Arguments]	${Source}	${Currency}	${Table}	${RecordId}		
+	${recordName}=	Set Variable	${Currency}.${Table}.${Source}.${RecordId}				
+	Call Function Expected Like Result	${Source}	UnPublishRecord	_	${TIMEOUT_SEC}	Ok	recordName
+	...	${recordName}					
+							
+UnPublish Type From External Source	[Arguments]	${Source}	${TypeName}				
+	Call Function Expected Like Result	${Source}	UnPublishType	_	${TIMEOUT_SEC}	Ok	typeName
+	...	${TypeName}					
+							
+UnPublish Chain From External Source	[Arguments]	${Source}	${Currency}	${Table}	${Chain}		
+	${chainName}=	Set Variable	${Currency}.${Table}.${Source}.${Chain}				
+	Call Function Expected Like Result	${Source}	UnPublishChain	_	${TIMEOUT_SEC}	Ok	chainName
+	...	${chainName}					
+							
+Clear MkvDB Directory	[Arguments]	${DirectoryPath}					
+	${dirFullName}=	Set Variable	${DirectoryPath}${/}MkvDB				
+	${status}=	Run Keyword And Return Status	Should Exist	${dirFullName}			
+	BuiltIn.Sleep	2s					
+	Run Keyword If	${status}	Remove Directory	${dirFullName}	recursive=False		

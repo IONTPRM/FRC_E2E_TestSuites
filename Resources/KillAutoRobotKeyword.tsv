@@ -1,0 +1,17 @@
+*Settings*							
+Resource	REFDATA_Common_Settings.tsv						
+Library	String						
+Library	OperatingSystem						
+Library	com.iontrading.robotframework.keywords.ProcessId.ComponentProcessId	#Library	com.iontrading.robotframework.keywords.ProcessId				
+							
+*Keywords*	*Action*	*AssetClassName*	*Field Name*				
+Stop Auto Robot	${LogsPath}	Join Path	${AUTOROBOT_EXECUTIONPATH}	LOGS			
+	@{logFileNames}=	OperatingSystem.List Files In Directory	${LogsPath}	DPLAYER_*.log			
+	${logFileName}	Set Variable	@{logFileNames}[0]				
+	${ProcessId}=	Get Process Id From CPP Component	${LogsPath}	${logFileName}			
+	LOG	${ProcessId}	level=WARN				
+	Run Keyword if	'${ProcessId}'=='None'	BuiltIn.Sleep	30s			
+	${ProcessId1}=	Run Keyword if	'${ProcessId}'=='None'	Get Process Id From CPP Component	${LogsPath}	${logFileName}	
+	LOG	${ProcessId1}	level=WARN				
+	${ProcessId}=	Set variable if	'${ProcessId}'=='None'	${ProcessId1}	${ProcessId}		
+	com.iontrading.robotframework.keywords.ProcessId.ComponentProcessId.Kill Process	${ProcessId}					

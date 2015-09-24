@@ -1,0 +1,445 @@
+*Keyword*	*Action*	*Record Id*	*FieldName*	*FieldsValue*	*FieldsType*		
+Create Future Type Record	[Arguments]	${RecordIdToDelete}	${FieldsName}	${FieldsValue}	${SaveRsult}=0:		
+	Run Keyword And Ignore Error	Call Function Expected Like Result	${REFDATA_SRC}	DeleteFuturesTypeRecord	_	${TIMEOUT_SEC}	Ok	Id	${RecordIdToDelete}
+	${Temp_Record_Id}=	Call Function Expected Like Result	${REFDATA_SRC}	InsertFuturesTypeRecord	_	${TIMEOUT_SEC}	0:	${EMPTY}	${EMPTY}
+	${TempRecord}=	Cut :	${Temp_Record_Id}				
+	@{FieldsValue_List} =	Split String	${FieldsValue}				
+	@{FieldsName_List} =	Split String	${FieldsName}				
+	${length}=	Get Length	${FieldsValue_List}				
+	: FOR	${n}	IN RANGE	0	${length}		
+		Transaction Call Expected Like Result	${REFDATA_SRC}	${REFDATA_CURR}	RECORDSTEMP	${TempRecord}	Ok	${TIMEOUT_SEC}	@{FieldsName_List}[${n}]	@{FieldsValue_List}[${n}]
+	${Inst_Id}	Call Function Expected Like Result	${REFDATA_SRC}	SaveFuturesTypeRecord	_	${TIMEOUT_SEC}	${RecordIdToDelete}	Id	${TempRecord}
+	${RecordId}=	Cut :	${Inst_Id}				
+	[Return]	${RecordId}					
+							
+Create Swap Index Record	[Arguments]	${RecordIdToDelete}	${FieldsName}	${FieldsValue}	${SaveRsult}=0:		
+	Run Keyword And Ignore Error	Call Function Expected Like Result	${REFDATA_SRC}	DeleteSwapIndexRecord	_	${TIMEOUT_SEC}	Ok	Id	${RecordIdToDelete}
+	${Temp_Record_Id}=	Call Function Expected Like Result	${REFDATA_SRC}	InsertSwapIndexRecord	_	${TIMEOUT_SEC}	0:	${EMPTY}	${EMPTY}
+	${TempRecord}=	Cut :	${Temp_Record_Id}				
+	@{FieldsValue_List} =	Split String	${FieldsValue}				
+	@{FieldsName_List} =	Split String	${FieldsName}				
+	${length}=	Get Length	${FieldsValue_List}				
+	: FOR	${n}	IN RANGE	0	${length}		
+		Transaction Call Expected Like Result	${REFDATA_SRC}	${REFDATA_CURR}	RECORDSTEMP	${TempRecord}	Ok	${TIMEOUT_SEC}	@{FieldsName_List}[${n}]	@{FieldsValue_List}[${n}]
+	${Inst_Id}	Call Function Expected Like Result	${REFDATA_SRC}	SaveSwapIndexRecord	_	${TIMEOUT_SEC}	${RecordIdToDelete}	Id	${TempRecord}
+	${RecordId}=	Cut :	${Inst_Id}				
+	[Return]	${RecordId}					
+							
+Create Bond Type Record	[Arguments]	${RecordIdToDelete}	${FieldsName}	${FieldsValue}	${SaveRsult}=0:		
+	Comment	Run Keyword And Ignore Error	MKV Call Function Expected Like Res	DeleteBondTypeRecord	${REFDATA_SRC}	STR ${RecordIdToDelete}	Ok	${TIMEOUT_SEC}
+	Run Keyword And Ignore Error	Call Function Expected Like Result	${REFDATA_SRC}	DeleteBondTypeRecord	_	${TIMEOUT_SEC}	Ok	Id	${RecordIdToDelete}
+	${Temp_Record_Id}=	Call Function Expected Like Result	${REFDATA_SRC}	InsertBondTypeRecord	_	${TIMEOUT_SEC}	0:	${EMPTY}	${EMPTY}
+	${TempRecord}=	Cut :	${Temp_Record_Id}				
+	@{FieldsValue_List} =	Split String	${FieldsValue}				
+	@{FieldsName_List} =	Split String	${FieldsName}				
+	${length}=	Get Length	${FieldsValue_List}				
+	: FOR	${n}	IN RANGE	0	${length}		
+		Transaction Call Expected Like Result	${REFDATA_SRC}	${REFDATA_CURR}	RECORDSTEMP	${TempRecord}	Ok	${TIMEOUT_SEC}	@{FieldsName_List}[${n}]	@{FieldsValue_List}[${n}]
+	${Inst_Id}	Call Function Expected Like Result	${REFDATA_SRC}	SaveBondTypeRecord	_	${TIMEOUT_SEC}	${RecordIdToDelete}	Id	${TempRecord}
+	${RecordId}=	Cut :	${Inst_Id}				
+	[Return]	${RecordId}					
+							
+Create Exchange Record	[Arguments]	${RecordIdToDelete}	${FieldsName}	${FieldsValue}	${FieldsType}	${SaveRsult}=0:	
+	Run Keyword And Ignore Error	MKV Call Function Expected Like Res	DeleteExchangeRecord	${REFDATA_SRC}	STR ${RecordIdToDelete}	Ok	${TIMEOUT_SEC}
+	@{Temp_Record_Id}	MKV Call Function Expected Like Res	InsertExchangeRecord	${REFDATA_SRC}	${EMPTY}	0:	${TIMEOUT_SEC}
+	${TempRecord}=	Cut 0:	@{Temp_Record_Id}[2]				
+	@{FieldsValue_List} =	Split String	${FieldsValue}				
+	@{FieldsName_List} =	Split String	${FieldsName}				
+	@{FieldsType_List} =	Split String	${FieldsType}				
+	${length}=	Get Length	${FieldsValue_List}				
+	#	:FOR	${n}	IN RANGE	0	${length}	
+	#	MKV Transaction Expected Like TRes	${REFDATA_SRC}	${REFDATA_CURR}	RECORDSTEMP	${TempRecord}	@{FieldsName_List}[${n}] @{FieldsType_List}[${n}] @{FieldsValue_List}[${n}]	Ok	${TIMEOUT_SEC}
+	#	@{Inst_Id}	MKV Call Function Expected Like Res	SaveExchangeRecord	${REFDATA_SRC}	STR ${TempRecord}	${SaveRsult}	${TIMEOUT_SEC}
+	${RecordId}=	Cut 0:	@{Inst_Id}[2]				
+	[Return]	${RecordId}					
+							
+Create Currency Record	[Arguments]	${RecordIdToDelete}	${FieldsName}	${FieldsValue}	${SaveRsult}=0:		
+	#	Run Keyword And Ignore Error	MKV Call Function Expected Like Res	DeleteCurrencyRecord	${REFDATA_SRC}	STR ${RecordIdToDelete}	Ok	${TIMEOUT_SEC}
+	Run Keyword And Ignore Error	Call Function Expected Like Result	${REFDATA_SRC}	DeleteCurrencyRecord	_	${TIMEOUT_SEC}	Ok	Id	${RecordIdToDelete}
+	#	@{Temp_Record_Id}	MKV Call Function Expected Like Res	InsertCurrencyRecord	${REFDATA_SRC}	${EMPTY}	0:	${TIMEOUT_SEC}
+	${Temp_Record_Id}=	Call Function Expected Like Result	${REFDATA_SRC}	InsertCurrencyRecord	_	${TIMEOUT_SEC}	0:	${EMPTY}	${EMPTY}
+	#	${TempRecord}=	Cut 0:	@{Temp_Record_Id}[2]			
+	${TempRecord}=	Cut :	${Temp_Record_Id}				
+	@{FieldsValue_List} =	Split String	${FieldsValue}				
+	@{FieldsName_List} =	Split String	${FieldsName}				
+	#	@{FieldsType_List} =	Split String	${FieldsType}			
+	${length}=	Get Length	${FieldsValue_List}				
+	: FOR	${n}	IN RANGE	0	${length}		
+		#	MKV Transaction Expected Like TRes	${REFDATA_SRC}	${REFDATA_CURR}	RECORDSTEMP	${TempRecord}	@{FieldsName_List}[${n}] @{FieldsType_List}[${n}] @{FieldsValue_List}[${n}]	Ok	${TIMEOUT_SEC}
+		Transaction Call Expected Like Result	${REFDATA_SRC}	${REFDATA_CURR}	RECORDSTEMP	${TempRecord}	Ok	${TIMEOUT_SEC}	@{FieldsName_List}[${n}]	@{FieldsValue_List}[${n}]
+	#	@{Inst_Id}	MKV Call Function Expected Like Res	SaveCurrencyRecord	${REFDATA_SRC}	STR ${TempRecord}	${SaveRsult}	${TIMEOUT_SEC}
+	${Inst_Id}	Call Function Expected Like Result	${REFDATA_SRC}	SaveCurrencyRecord	_	${TIMEOUT_SEC}	${RecordIdToDelete}	Id	${TempRecord}
+	#	${RecordId}=	Cut 0:	@{Inst_Id}[2]			
+	${RecordId}=	Cut :	${Temp_Record_Id}				
+	[Return]	${RecordId}					
+							
+Create Swap Type Record	[Arguments]	${RecordIdToDelete}	${FieldsName}	${FieldsValue}	${SaveRsult}=0:		
+	@{FieldsValue_List} =	Split String	${FieldsValue}				
+	@{FieldsName_List} =	Split String	${FieldsName}				
+	${Index}=	Get Index From List	${FieldsName_List}	InternalSwapType			
+	${InternalSwapTypeVal}=	Get From List	${FieldsValue_List}	${Index}			
+	${Index}=	Get Index From List	${FieldsName_List}	S0_CurrencyStr			
+	${S0_CurrencyVal}=	Get From List	${FieldsValue_List}	${Index}			
+	${Index}=	Get Index From List	${FieldsName_List}	S1_CurrencyStr			
+	${S1_CurrencyVal}=	Get From List	${FieldsValue_List}	${Index}			
+	${Index}=	Get Index From List	${FieldsName_List}	S1_Index			
+	${S1_IndexKeyVal}=	Get From List	${FieldsValue_List}	${Index}			
+	Run Keyword And Ignore Error	Call Function Expected Like Result	${REFDATA_SRC}	DeleteSwapTypeRecord	_	${TIMEOUT_SEC}	Ok	SwapType	${InternalSwapTypeVal}	S0_Currency	${S0_CurrencyVal}	S0_Index	FLOAT	S1_Currency	${S1_CurrencyVal}	S1_Index	${S1_IndexKeyVal}
+	${Temp_Record_Id}=	Call Function Expected Like Result	${REFDATA_SRC}	InsertSwapTypeRecord	_	${TIMEOUT_SEC}	0:	${EMPTY}	${EMPTY}
+	${TempRecord}=	Cut :	${Temp_Record_Id}				
+	${length}=	Get Length	${FieldsValue_List}				
+	: FOR	${n}	IN RANGE	0	${length}		
+		Transaction Call Expected Like Result	${REFDATA_SRC}	${REFDATA_CURR}	RECORDSTEMP	${TempRecord}	Ok	${TIMEOUT_SEC}	@{FieldsName_List}[${n}]	@{FieldsValue_List}[${n}]
+	${Inst_Id}=	Call Function Expected Like Result	${REFDATA_SRC}	SaveSwapTypeRecord	_	${TIMEOUT_SEC}	${RecordIdToDelete}	Id	${TempRecord}
+	${RecordId}=	Cut :	${Inst_Id}				
+	[Return]	${RecordId}					
+							
+Create Option Type Record	[Arguments]	${RecordIdToDelete}	${FieldsName}	${FieldsValue}	${FieldsType}	${SaveRsult}=0:	
+	Run Keyword And Ignore Error	MKV Call Function Expected Like Res	DeleteOptionTypeRecord	${REFDATA_SRC}	STR ${RecordIdToDelete}	Ok	${TIMEOUT_SEC}
+	@{Temp_Record_Id}	MKV Call Function Expected Like Res	InsertOptionTypeRecord	${REFDATA_SRC}	${EMPTY}	0:	${TIMEOUT_SEC}
+	${TempRecord}=	Cut 0:	@{Temp_Record_Id}[2]				
+	@{FieldsValue_List} =	Split String	${FieldsValue}				
+	@{FieldsName_List} =	Split String	${FieldsName}				
+	@{FieldsType_List} =	Split String	${FieldsType}				
+	${length}=	Get Length	${FieldsValue_List}				
+	#	:FOR	${n}	IN RANGE	0	${length}	
+	#	MKV Transaction Expected Like TRes	${REFDATA_SRC}	${REFDATA_CURR}	RECORDSTEMP	${TempRecord}	@{FieldsName_List}[${n}] @{FieldsType_List}[${n}] @{FieldsValue_List}[${n}]	Ok	${TIMEOUT_SEC}
+	#	@{Inst_Id}	MKV Call Function Expected Like Res	SaveOptionTypeRecord	${REFDATA_SRC}	STR ${TempRecord}	${SaveRsult}	${TIMEOUT_SEC}
+	${RecordId}=	Cut 0:	@{Inst_Id}[2]				
+	[Return]	${RecordId}					
+							
+Create MBSTBA Type Record	[Arguments]	${RecordIdToDelete}	${FieldsName}	${FieldsValue}	${FieldsType}	${SaveRsult}=0:	
+	Run Keyword And Ignore Error	MKV Call Function Expected Like Res	DeleteMBSTBARecord	${REFDATA_SRC}	STR ${RecordIdToDelete}	Ok	${TIMEOUT_SEC}
+	@{Temp_Record_Id}	MKV Call Function Expected Like Res	InsertMBSTBARecord	${REFDATA_SRC}	${EMPTY}	0:	${TIMEOUT_SEC}
+	${TempRecord}=	Cut 0:	@{Temp_Record_Id}[2]				
+	@{FieldsValue_List} =	Split String	${FieldsValue}				
+	@{FieldsName_List} =	Split String	${FieldsName}				
+	@{FieldsType_List} =	Split String	${FieldsType}				
+	${length}=	Get Length	${FieldsValue_List}				
+	#	:FOR	${n}	IN RANGE	0	${length}	
+	#	MKV Transaction Expected Like TRes	${REFDATA_SRC}	${REFDATA_CURR}	RECORDSTEMP	${TempRecord}	@{FieldsName_List}[${n}] @{FieldsType_List}[${n}] @{FieldsValue_List}[${n}]	Ok	${TIMEOUT_SEC}
+	#	@{Inst_Id}	MKV Call Function Expected Like Res	SaveMBSTBARecord	${REFDATA_SRC}	STR ${TempRecord}	${SaveRsult}	${TIMEOUT_SEC}
+	${RecordId}=	Cut 0:	@{Inst_Id}[2]				
+	[Return]	${RecordId}					
+							
+Create MM Type Record	[Arguments]	${RecordIdToDelete}	${FieldsName}	${FieldsValue}	${FieldsType}	${SaveRsult}=0:	
+	Run Keyword And Ignore Error	MKV Call Function Expected Like Res	DeleteMMCurveTypeRecord	${REFDATA_SRC}	STR ${RecordIdToDelete}	Ok	${TIMEOUT_SEC}
+	@{Temp_Record_Id}	MKV Call Function Expected Like Res	InsertMMCurveTypeRecord	${REFDATA_SRC}	${EMPTY}	0:	${TIMEOUT_SEC}
+	${TempRecord}=	Cut 0:	@{Temp_Record_Id}[2]				
+	@{FieldsValue_List} =	Split String	${FieldsValue}				
+	@{FieldsName_List} =	Split String	${FieldsName}				
+	@{FieldsType_List} =	Split String	${FieldsType}				
+	${length}=	Get Length	${FieldsValue_List}				
+	#	:FOR	${n}	IN RANGE	0	${length}	
+	#	MKV Transaction Expected Like TRes	${REFDATA_SRC}	${REFDATA_CURR}	RECORDSTEMP	${TempRecord}	@{FieldsName_List}[${n}] @{FieldsType_List}[${n}] @{FieldsValue_List}[${n}]	Ok	${TIMEOUT_SEC}
+	#	@{Inst_Id}	MKV Call Function Expected Like Res	SaveMMCurveTypeRecord	${REFDATA_SRC}	STR ${TempRecord}	${SaveRsult}	${TIMEOUT_SEC}
+	${RecordId}=	Cut 0:	@{Inst_Id}[2]				
+	[Return]	${RecordId}					
+							
+Create Sales Rep Record	[Arguments]	${RecordIdToDelete}	${FieldsName}	${FieldsValue}	${FieldsType}	${SaveRsult}=0:	
+	Run Keyword And Ignore Error	MKV Call Function Expected Like Res	DeleteSalesRepRecord	${REFDATA_SRC}	STR ${RecordIdToDelete}	Ok	${TIMEOUT_SEC}
+	@{Temp_Record_Id}	MKV Call Function Expected Like Res	InsertSalesRepRecord	${REFDATA_SRC}	${EMPTY}	0:	${TIMEOUT_SEC}
+	${TempRecord}=	Cut 0:	@{Temp_Record_Id}[2]				
+	@{FieldsValue_List} =	Split String	${FieldsValue}				
+	@{FieldsName_List} =	Split String	${FieldsName}				
+	@{FieldsType_List} =	Split String	${FieldsType}				
+	${length}=	Get Length	${FieldsValue_List}				
+	#	:FOR	${n}	IN RANGE	0	${length}	
+	#	MKV Transaction Expected Like TRes	${REFDATA_SRC}	${REFDATA_CURR}	RECORDSTEMP	${TempRecord}	@{FieldsName_List}[${n}] @{FieldsType_List}[${n}] @{FieldsValue_List}[${n}]	Ok	${TIMEOUT_SEC}
+	#	@{Inst_Id}	MKV Call Function Expected Like Res	SaveSalesRepRecord	${REFDATA_SRC}	STR ${TempRecord}	${SaveRsult}	${TIMEOUT_SEC}
+	${RecordId}=	Cut 0:	@{Inst_Id}[2]				
+	#Delete Sales Rep Record	[Arguments]	${RecordIdToDelete}	${Result}=Ok			
+	#	Run Keyword And Ignore Error	MKV Call Function Expected Like Res	DeleteSalesRepRecord	${REFDATA_SRC}	STR ${RecordIdToDelete}	${Result}	${TIMEOUT_SEC}
+	#Create Code Type Record	[Arguments]	${RecordIdToDelete}	${IdValue}	${DescValue}	${Result}=Ok	
+	#	Run Keyword And Ignore Error	MKV Call Function Expected Like Res	DeleteCodeType	${REFDATA_SRC}	INT ${RecordIdToDelete}	Ok	${TIMEOUT_SEC}
+	#	MKV Call Function Expected Like Res	CreateCodeType	${REFDATA_SRC}	INT ${IdValue} STR ${DescValue}	0:	${TIMEOUT_SEC}
+	[Return]	${RecordId}					
+							
+Delete Swap Type Record	[Arguments]	${InternalSwapTypeVal}	${S0_CurrencyVal}	${S1_CurrencyVal}	${S1_IndexKeyVal}	${Result}=Ok	
+	@{Inst_Id}	Call Function Expected Like Result	${REFDATA_SRC}	DeleteSwapTypeRecord	_	${TIMEOUT_SEC}	Ok	SwapType	${InternalSwapTypeVal}	S0_Currency	${S0_CurrencyVal}	S0_IndexKey	FLOAT	S1_Currency	${S1_CurrencyVal}	S0_IndexKey	${S1_IndexKeyVal}
+	#	Run Keyword And Ignore Error	MKV Call Function Expected Like Res	DeleteSwapTypeRecord	${REFDATA_SRC}	STR ${InternalSwapTypeVal} STR ${S0_CurrencyVal} STR FLOAT STR ${S1_CurrencyVal} STR ${S1_IndexKeyVal}	${Result}	${TIMEOUT_SEC}
+							
+Create Ticker Mapping Record	[Arguments]	${RecordIdToDelete}	${FieldsName}	${FieldsValue}	${FieldsType}	${SaveRsult}=0:	
+	Run Keyword And Ignore Error	MKV Call Function Expected Like Res	DeleteTickerMappingRecord	${REFDATA_SRC}	STR ${RecordIdToDelete}	Ok	${TIMEOUT_SEC}
+	@{Temp_Record_Id}	MKV Call Function Expected Like Res	InsertTickerMappingRecord	${REFDATA_SRC}	${EMPTY}	0:	${TIMEOUT_SEC}
+	${TempRecord}=	Cut 0:	@{Temp_Record_Id}[2]				
+	@{FieldsValue_List} =	Split String	${FieldsValue}				
+	@{FieldsName_List} =	Split String	${FieldsName}				
+	@{FieldsType_List} =	Split String	${FieldsType}				
+	${length}=	Get Length	${FieldsValue_List}				
+	#	:FOR	${n}	IN RANGE	0	${length}	
+	#	MKV Transaction Expected Like TRes	${REFDATA_SRC}	${REFDATA_CURR}	RECORDSTEMP	${TempRecord}	@{FieldsName_List}[${n}] @{FieldsType_List}[${n}] @{FieldsValue_List}[${n}]	Ok	${TIMEOUT_SEC}
+	#	@{Inst_Id}	MKV Call Function Expected Like Res	SaveTickerMappingRecord	${REFDATA_SRC}	STR ${TempRecord}	${SaveRsult}	${TIMEOUT_SEC}
+	${RecordId}=	Cut 0:	@{Inst_Id}[2]				
+	[Return]	${RecordId}					
+							
+Create Business Date Record	[Arguments]	${RecordIdToDelete}	${FieldsName}	${FieldsValue}	${FieldsType}	${SaveRsult}=0:	
+	Run Keyword And Ignore Error	MKV Call Function Expected Like Res	DeleteBusinessDate	${REFDATA_SRC}	STR ${RecordIdToDelete}	Ok	${TIMEOUT_SEC}
+	@{Temp_Record_Id}	MKV Call Function Expected Like Res	InsertBusinessDate	${REFDATA_SRC}	${EMPTY}	0:	${TIMEOUT_SEC}
+	${TempRecord}=	Cut 0:	@{Temp_Record_Id}[2]				
+	@{FieldsValue_List} =	Split String	${FieldsValue}				
+	@{FieldsName_List} =	Split String	${FieldsName}				
+	@{FieldsType_List} =	Split String	${FieldsType}				
+	${length}=	Get Length	${FieldsValue_List}				
+	#	:FOR	${n}	IN RANGE	0	${length}	
+	#	MKV Transaction Expected Like TRes	${REFDATA_SRC}	${REFDATA_CURR}	RECORDSTEMP	${TempRecord}	@{FieldsName_List}[${n}] @{FieldsType_List}[${n}] @{FieldsValue_List}[${n}]	Ok	${TIMEOUT_SEC}
+	#	@{Inst_Id}	MKV Call Function Expected Like Res	SaveBusinessDate	${REFDATA_SRC}	STR ${TempRecord}	${SaveRsult}	${TIMEOUT_SEC}
+	${RecordId}=	Cut 0:	@{Inst_Id}[2]				
+	[Return]	${RecordId}					
+							
+Create Holiday Record	[Arguments]	${RecordIdToDelete}	${FieldsName}	${FieldsValue}	${FieldsType}	${SaveRsult}=0:	
+	Run Keyword And Ignore Error	MKV Call Function Expected Like Res	DeleteHolidayRecord	${REFDATA_SRC}	STR ${RecordIdToDelete}	Ok	${TIMEOUT_SEC}
+	@{Temp_Record_Id}	MKV Call Function Expected Like Res	InsertHolidayRecord	${REFDATA_SRC}	${EMPTY}	0:	${TIMEOUT_SEC}
+	${TempRecord}=	Cut 0:	@{Temp_Record_Id}[2]				
+	@{FieldsValue_List} =	Split String	${FieldsValue}				
+	@{FieldsName_List} =	Split String	${FieldsName}				
+	@{FieldsType_List} =	Split String	${FieldsType}				
+	${length}=	Get Length	${FieldsValue_List}				
+	#	:FOR	${n}	IN RANGE	0	${length}	
+	#	MKV Transaction Expected Like TRes	${REFDATA_SRC}	${REFDATA_CURR}	RECORDSTEMP	${TempRecord}	@{FieldsName_List}[${n}] @{FieldsType_List}[${n}] @{FieldsValue_List}[${n}]	Ok	${TIMEOUT_SEC}
+	#	@{Inst_Id}	MKV Call Function Expected Like Res	SaveHolidayRecord	${REFDATA_SRC}	STR ${TempRecord}	${SaveRsult}	${TIMEOUT_SEC}
+	${RecordId}=	Cut 0:	@{Inst_Id}[2]				
+	#Create Instrument Group	[Arguments]	${RecordIdToDelete}	${Id}	${Desc}	${Rule}	${VarAggumentsWithValue}=${EMPTY}	${SaveRsult}=0:
+	#	Run Keyword And Ignore Error	MKV Call Function Expected Like Res	DeleteInstrumentGroup	${REFDATA_SRC}	STR ${RecordIdToDelete}	Ok	${TIMEOUT_SEC}
+	#	@{Record_Id}	MKV Call Function Expected Like Res	CreateInstrumentGroup	${REFDATA_SRC}	STR ${Id} STR ${Desc} STR ${Rule} ${VarAggumentsWithValue}	0:	${TIMEOUT_SEC}
+	#	${RecordId}=	Cut 0:	@{Record_Id}[2]			
+	#	[Return]	${RecordId}				
+	[Return]	${RecordId}					
+							
+Get Field Value For the Specified Field Name	[Arguments]	${FieldName}	@{FieldNameValuesList}				
+	${fieldNameIndex}	Get Index From List	${FieldNameValuesList}	${FieldName}			
+	${fieldValueIndex}	Evaluate	${fieldNameIndex}+1				
+	${fieldValue}	Get From List	${FieldNameValuesList}	${fieldValueIndex}			
+	[Return]	${fieldValue}					
+							
+Get RecordId For Maintenance Record	[Arguments]	${RecordType}	@{FieldNameValuesList}				
+	${indexId}=	Get Index From List	${FieldNameValuesList}	Id			
+	${indexIdValue}=	Evaluate	${indexId}+1				
+	${value}=	Run Keyword If	'${indexId}'!='-1'	Get From List	${FieldNameValuesList}	${indexIdValue}	
+	${valueSwapType}=	Run Keyword If	'${indexId}'=='-1' and '${RecordType}'=='SWAPTYPE'	Run Keyword And Continue On Failure	Get Record Id For Swap Type Record	@{FieldNameValuesList}	
+	${valueOptionType}=	Run Keyword If	'${indexId}'=='-1' and '${RecordType}'=='OPTIONTYPE'	Run Keyword And Continue On Failure	Get Record Id For Option Type Record	@{FieldNameValuesList}	
+	${valueExchange}=	Run Keyword If	'${indexId}'=='-1' and '${RecordType}'=='EXCHANGE'	Run Keyword And Continue On Failure	Get Record Id For Exchange Record	@{FieldNameValuesList}	
+	${valueIssuer}=	Run Keyword If	'${indexId}'=='-1' and '${RecordType}'=='ISSUER'	Run Keyword And Continue On Failure	Get Record Id For Issuer Record	@{FieldNameValuesList}	
+	${valueRating}=	Run Keyword If	'${indexId}'=='-1' and '${RecordType}'=='RATING'	Run Keyword And Continue On Failure	Get Record Id For Rating Record	@{FieldNameValuesList}	
+	${valueRateSource}=	Run Keyword If	'${indexId}'=='-1' and '${RecordType}'=='RATESOURCE'	Run Keyword And Continue On Failure	Get Record Id For RateSource Record	@{FieldNameValuesList}	
+	${valueRateSourcePage}=	Run Keyword If	'${indexId}'=='-1' and '${RecordType}'=='RATESOURCEPAGE'	Run Keyword And Continue On Failure	Get Record Id For RateSourcePage Record	@{FieldNameValuesList}	
+	${valueHoliday}=	Run Keyword If	'${indexId}'=='-1' and ('${RecordType}'=='CALENDAR' or '${RecordType}'=='HOLIDAY')	Run Keyword And Continue On Failure	Get Record Id For Holiday Record	@{FieldNameValuesList}	
+	${valueMBSCalendar}=	Run Keyword If	'${indexId}'=='-1' and '${RecordType}'=='MBSCALENDAR'	Run Keyword And Continue On Failure	Get Record Id For MBSCalendar Record	@{FieldNameValuesList}	
+	${valueTenor}=	Run Keyword If	'${indexId}'=='-1' and '${RecordType}'=='TENOR'	Run Keyword And Continue On Failure	Get Record Id For Tenor Record	@{FieldNameValuesList}	
+	${valueIndex}=	Run Keyword If	'${indexId}'=='-1' and '${RecordType}'=='INDEXHISTORY'	Run Keyword And Continue On Failure	Get Record Id For IndexHistory Record	@{FieldNameValuesList}	
+	${valueEventCalendar}=	Run Keyword If	'${indexId}'=='-1' and '${RecordType}'=='EVENTCALENDAR'	Run Keyword And Continue On Failure	Get Record Id For EventCalendar Record	@{FieldNameValuesList}	
+	${valueSalesCredit}=	Run Keyword If	'${indexId}'=='-1' and '${RecordType}'=='SALESCREDIT'	Run Keyword And Continue On Failure	Get Record Id For SalesCredit Record	@{FieldNameValuesList}	
+	${RecordId}=	Set Variable If	'${indexId}'!= '-1'	${value}	'${indexId}'=='-1' and '${RecordType}'=='SWAPTYPE'	${valueSwapType}	'${indexId}'=='-1' and '${RecordType}'=='OPTIONTYPE'	${valueOptionType}	'${indexId}'=='-1' and '${RecordType}'=='RATING'	${valueRating.strip()}	'${indexId}'=='-1' and '${RecordType}'=='EXCHANGE'	${valueExchange}	'${indexId}'=='-1' and '${RecordType}'=='ISSUER'	${valueIssuer.strip()}	'${indexId}'=='-1' and '${RecordType}'=='RATESOURCE'	${valueRateSource}	'${indexId}'=='-1' and '${RecordType}'=='RATESOURCEPAGE'	${valueRateSourcePage}	'${indexId}'=='-1' and ('${RecordType}'=='CALENDAR' or '${RecordType}'=='HOLIDAY')	${valueHoliday}	'${indexId}'=='-1' and '${RecordType}'=='MBSCALENDAR'	${valueMBSCalendar}	'${indexId}'=='-1' and '${RecordType}'=='TENOR'	${valueTenor}	'${indexId}'=='-1' and '${RecordType}'=='INDEXHISTORY'	${valueIndex}	'${indexId}'=='-1' and '${RecordType}'=='EVENTCALENDAR'	${valueEventCalendar}	'${indexId}'=='-1' and '${RecordType}'=='SALESCREDIT'	${valueSalesCredit}
+	[Return]	${RecordId}					
+							
+Get Record Id For Swap Type Record	[Arguments]	@{FieldNameValuesList}					
+	${InternalSwapTypeValue}	Get Field Value For the Specified Field Name	InternalSwapType	@{FieldNameValuesList}			
+	${S0_CurrencyStrValue}=	Get Field Value For the Specified Field Name	S0_CurrencyStr	@{FieldNameValuesList}			
+	${S1_CurrencyStrValue}=	Get Field Value For the Specified Field Name	S1_CurrencyStr	@{FieldNameValuesList}			
+	${S1_IndexValue}=	Get Field Value For the Specified Field Name	S1_Index	@{FieldNameValuesList}			
+	${RecordId}=	Catenate	SEPARATOR=_	${InternalSwapTypeValue}	${S0_CurrencyStrValue}	FIXED	${S1_CurrencyStrValue}	${S1_IndexValue}
+	[Return]	${RecordId}					
+							
+Get Record Id For Option Type Record	[Arguments]	@{FieldNameValuesList}					
+	${CurrencyStrValue}	Get Field Value For the Specified Field Name	CurrencyStr	@{FieldNameValuesList}			
+	${UnderlyingSecurityTypeValue}	Get Field Value For the Specified Field Name	UnderlyingSecurityType	@{FieldNameValuesList}			
+	${UnderlyingSecurityTypeStrValue}=	Set Variable If	${UnderlyingSecurityTypeValue}==0	Undef	${UnderlyingSecurityTypeValue}==2	Cash	${UnderlyingSecurityTypeValue}==3	Basis	${UnderlyingSecurityTypeValue}==4	Future	${UnderlyingSecurityTypeValue}==5	Option	${UnderlyingSecurityTypeValue}==6	Swap	${UnderlyingSecurityTypeValue}==7	Switch	${UnderlyingSecurityTypeValue}==8	Repo	${UnderlyingSecurityTypeValue}==11	Strategy	${UnderlyingSecurityTypeValue}==12	CDS	${UnderlyingSecurityTypeValue}==13	Equity	${UnderlyingSecurityTypeValue}==15	FX	${UnderlyingSecurityTypeValue}==16	CDSCurve	${UnderlyingSecurityTypeValue}==17	RepoBasket	${UnderlyingSecurityTypeValue}==18	MMCurvePoint	${UnderlyingSecurityTypeValue}==19	MMCurve
+	${RecordId}	Catenate	SEPARATOR=_	${CurrencyStrValue}	${UnderlyingSecurityTypeStrValue}		
+	[Return]	${RecordId}					
+							
+Get Record Id For Exchange Record	[Arguments]	@{FieldNameValuesList}					
+	${RecordId}	Get Field Value For the Specified Field Name	Name	@{FieldNameValuesList}			
+	[Return]	${RecordId}					
+							
+Get Record Id For Issuer Record	[Arguments]	@{FieldNameValuesList}					
+	${TableName}	Set Variable	FW_issuer				
+	SQL Connect to DBMS	${COMMON DB TYPE}	${COMMON DB HOST}	${COMMON DB PORT}	${COMMON DB NAME}	${COMMON DB USER}	${COMMON DB PWD}
+	${nameValue}	Get Field Value For the Specified Field Name	Name	@{FieldNameValuesList}			
+	${shortNameValue}	Get Field Value For the Specified Field Name	ShortName	@{FieldNameValuesList}			
+	${whereClause}=	Catenate	SEPARATOR=${SPACE}	name	=	'${nameValue}'	AND	sname	=	'${shortNameValue}'
+	${RecordId}	Set Variable	${EMPTY}				
+	${noOfRecords}=	SQL Get Number Of Records Verifying Where Clause	${TableName}	${whereClause}			
+	@{recordIdsList}=	Run Keyword If	'${noOfRecords}'>'1'	SQL Get Multiple Column Values From Multiple Records	${TableName}	issuer_id	${whereClause}
+	${recId}	Run Keyword Unless	'${noOfRecords}'>'1'	SQL Get Column Value From a Record	${TableName}	issuer_id	${whereClause}
+	: FOR	${n}	IN RANGE	0	${noOfRecords}		
+		${RecordId}	Run Keyword If	'${RecordId}'=='${EMPTY}' and '${noOfRecords}'>'1'	Catenate	SEPARATOR=|	@{recordIdsList}[${n}]	ELSE IF	'${RecordId}'!='${EMPTY}' and '${noOfRecords}'>'1'	Catenate	SEPARATOR=|	${RecordId}	@{recordIdsList}[${n}]
+	${RecordId}	Run Keyword If	'${noOfRecords}'>'1'	Get Substring	${RecordId}		-1	ELSE	Set Variable	${recId}
+	SQL Disconnect from DBMS						
+	[Return]	${RecordId}					
+							
+Get Record Id For Rating Record	[Arguments]	@{FieldNameValuesList}					
+	${TableName}	Set Variable	FW_ratings				
+	SQL Connect to DBMS	${COMMON DB TYPE}	${COMMON DB HOST}	${COMMON DB PORT}	${COMMON DB NAME}	${COMMON DB USER}	${COMMON DB PWD}
+	${localValue}	Get Field Value For the Specified Field Name	Local	@{FieldNameValuesList}			
+	${whereClause}=	Catenate	SEPARATOR=${SPACE}	local	=	'${localValue}'	
+	${RecordId}=	SQL Get Column Value From a Record	${TableName}	id	${whereClause}		
+	SQL Disconnect from DBMS						
+	[Return]	${RecordId}					
+							
+Get Record Id For RateSource Record	[Arguments]	@{FieldNameValuesList}					
+	${CurrencyBaseValue}	Get Field Value For the Specified Field Name	CurrencyBase	@{FieldNameValuesList}			
+	${CurrencyValue}	Get Field Value For the Specified Field Name	Currency	@{FieldNameValuesList}			
+	${InfSourceValue}	Get Field Value For the Specified Field Name	InfSource	@{FieldNameValuesList}			
+	${ListIdValue}	Get Field Value For the Specified Field Name	ListId	@{FieldNameValuesList}			
+	${RecordId}=	Catenate	SEPARATOR=_	${CurrencyBaseValue}	${CurrencyValue}	${InfSourceValue}	${ListIdValue}
+	[Return]	${RecordId}					
+							
+Get Record Id For RateSourcePage Record	[Arguments]	@{FieldNameValuesList}					
+	${InfSourceValue}	Get Field Value For the Specified Field Name	InfSource	@{FieldNameValuesList}			
+	${InfPageValue}	Get Field Value For the Specified Field Name	InfPage	@{FieldNameValuesList}			
+	${ListIdValue}	Get Field Value For the Specified Field Name	ListId	@{FieldNameValuesList}			
+	${RecordId}=	Catenate	SEPARATOR=_	${InfSourceValue}	${InfPageValue}	${ListIdValue}	
+	[Return]	${RecordId}					
+							
+Get Record Id For Holiday Record	[Arguments]	@{FieldNameValuesList}					
+	${calendarValue}	Get Field Value For the Specified Field Name	CalendarId	@{FieldNameValuesList}			
+	${dateValue}	Get Field Value For the Specified Field Name	Date	@{FieldNameValuesList}			
+	${RecordId}=	Catenate	SEPARATOR=_	${calendarValue}	${dateValue}		
+	[Return]	${RecordId}					
+							
+Get Record Id For IndexHistory Record	[Arguments]	@{FieldNameValuesList}					
+	${indexIdValue}	Get Field Value For the Specified Field Name	IndexId	@{FieldNameValuesList}			
+	${yearValue}	Get Field Value For the Specified Field Name	Year	@{FieldNameValuesList}			
+	${RecordId}=	Catenate	SEPARATOR=_	${indexIdValue}	${yearValue}		
+	[Return]	${RecordId}					
+							
+Get Record Id For MBSCalendar Record	[Arguments]	@{FieldNameValuesList}					
+	${mbsSettleClassValue}	Get Field Value For the Specified Field Name	MBSSettleClass	@{FieldNameValuesList}			
+	${deliveryMonthYearValue}	Get Field Value For the Specified Field Name	DeliveryMonthYear	@{FieldNameValuesList}			
+	${RecordId}=	Catenate	SEPARATOR=_	${mbsSettleClassValue}	${deliveryMonthYearValue}		
+	[Return]	${RecordId}					
+							
+Get Record Id For Tenor Record	[Arguments]	@{FieldNameValuesList}					
+	${listIdValue}	Get Field Value For the Specified Field Name	ListId	@{FieldNameValuesList}			
+	${tenorIdValue}	Get Field Value For the Specified Field Name	TenorId	@{FieldNameValuesList}			
+	${RecordId}=	Catenate	SEPARATOR=_	${listIdValue}	${tenorIdValue}		
+	[Return]	${RecordId}					
+							
+Get Record Id For EventCalendar Record	[Arguments]	@{FieldNameValuesList}					
+	${TableName}	Set Variable	FW_cal_event				
+	SQL Connect to DBMS	${COMMON DB TYPE}	${COMMON DB HOST}	${COMMON DB PORT}	${COMMON DB NAME}	${COMMON DB USER}	${COMMON DB PWD}
+	${descValue}	Get Field Value For the Specified Field Name	Desc	@{FieldNameValuesList}			
+	${whereClause}=	Catenate	SEPARATOR=${SPACE}	description	=	'${descValue}'	
+	${RecordId}=	SQL Get Column Value From a Record	${TableName}	event_id	${whereClause}		
+	SQL Disconnect from DBMS						
+	[Return]	${RecordId}					
+							
+Get Record Id For SalesCredit Record	[Arguments]	@{FieldNameValuesList}					
+	${TableName}	Set Variable	FW_sales_credit				
+	SQL Connect to DBMS	${COMMON DB TYPE}	${COMMON DB HOST}	${COMMON DB PORT}	${COMMON DB NAME}	${COMMON DB USER}	${COMMON DB PWD}
+	${productValue}	Get Field Value For the Specified Field Name	Product	@{FieldNameValuesList}			
+	${commCodeValue}	Get Field Value For the Specified Field Name	CommCode	@{FieldNameValuesList}			
+	${whereClause}=	Catenate	SEPARATOR=${SPACE}	product	=	'${productValue}'	and	comm_code	=	'${commCodeValue}'
+	${RecordId}=	SQL Get Column Value From a Record	${TableName}	sales_credit_key	${whereClause}		
+	SQL Disconnect from DBMS						
+	[Return]	${RecordId}					
+							
+Add Maintenance Table Record	[Arguments]	${RecordType}	@{FieldNameValuesList}				
+	${RecordId}	Get RecordId For Maintenance Record	${RecordType}	@{FieldNameValuesList}			
+	Run Keyword And Ignore Error	DeleteMaintenanceRecord	${RecordType}	${RecordId}			
+	${status}	${message}	Run Keyword And Ignore Error	Run Keyword If	'${RecordType}'=='RATESOURCE'	Add Maintenance Table Record For RateSource	@{FieldNameValuesList}
+	...	ELSE IF	'${RecordType}'=='RATESOURCEPAGE'	Add Maintenance Table Record For RateSourcePage	@{FieldNameValuesList}		
+	...	ELSE IF	'${RecordType}'=='CALENDAR'	Add Maintenance Table Record For Calendar	@{FieldNameValuesList}		
+	...	ELSE IF	'${RecordType}'=='BOOKGROUP'	Add Maintenance Table Record For BookGroup	@{FieldNameValuesList}		
+	...	ELSE IF	'${RecordType}'=='CODETYPE'	Add Maintenance Table Record For CodeType	@{FieldNameValuesList}		
+	...	ELSE IF	'${RecordType}'=='COUNTERPARTYGROUP'	Add Maintenance Table Record For CounterpartyGroup	@{FieldNameValuesList}		
+	...	ELSE IF	'${RecordType}'=='COUNTRY'	Add Maintenance Table Record For Country	@{FieldNameValuesList}		
+	...	ELSE IF	'${RecordType}'=='INSTRUMENTGROUP'	Add Maintenance Table Record For InstrumentGroup	@{FieldNameValuesList}		
+	...	ELSE IF	'${RecordType}'=='INSTRUMENTCUSTOMFIELD'	Add Maintenance Table Record For InstrumentCustomField	@{FieldNameValuesList}		
+	...	ELSE IF	'${RecordType}'=='LOCATION'	Add Maintenance Table Record For Location	@{FieldNameValuesList}		
+	...	ELSE IF	'${RecordType}'=='INDEXHISTORY'	Add Maintenance Table Record For Index	@{FieldNameValuesList}		
+	...	ELSE	Refdata Add MaintenanceRecord Using RecordType	${RecordType}	@{FieldNameValuesList}		
+	${Result}	Set Variable	Ok				
+	Run Keyword If	'${Result}'!='Ok'	Should Contain	${message}	${Result}		
+	${RecordId}	Run Keyword If	'${Result}'=='Ok'	Get RecordId For Maintenance Record	${RecordType}	@{FieldNameValuesList}	
+	Run Keyword If	'${Result}'=='Ok'	Run Keywords	Should Be True	'${status}'=='PASS'	${message}	AND	Set Test Variable	${RECID}	${RecordId}
+	Set Suite Variable	${ID_${RecordType}}	${RecordId}				
+	[Return]	${RECID}					
+							
+Add Maintenance Table Record For RateSource	[Arguments]	@{FieldNameValuesList}					
+	${CurrencyBaseValue}	Get Field Value For the Specified Field Name	CurrencyBase	@{FieldNameValuesList}			
+	${CurrencyValue}	Get Field Value For the Specified Field Name	Currency	@{FieldNameValuesList}			
+	${InfSourceValue}	Get Field Value For the Specified Field Name	InfSource	@{FieldNameValuesList}			
+	${ListIdValue}	Get Field Value For the Specified Field Name	ListId	@{FieldNameValuesList}			
+	${response}=	Refdata Add Rate Source Record	${CurrencyBaseValue}	${CurrencyValue}	${InfSourceValue}	${ListIdValue}	
+	[Return]	${response}					
+							
+Add Maintenance Table Record For RateSourcePage	[Arguments]	@{FieldNameValuesList}					
+	${InfSourceValue}	Get Field Value For the Specified Field Name	InfSource	@{FieldNameValuesList}			
+	${InfPageValue}	Get Field Value For the Specified Field Name	InfPage	@{FieldNameValuesList}			
+	${ListIdValue}	Get Field Value For the Specified Field Name	ListId	@{FieldNameValuesList}			
+	${response}=	Refdata Add Rate Source Page Record	${InfSourceValue}	${InfPageValue}	${ListIdValue}		
+	[Return]	${response}					
+							
+Add Maintenance Table Record For Calendar	[Arguments]	@{FieldNameValuesList}					
+	${response}=	Refdata Add Maintenance Record Using Record Type	HOLIDAY	@{FieldNameValuesList}			
+	[Return]	${response}					
+							
+Delete Maintenance Record	[Arguments]	${RecordType}	${RecordId}	${Result}=Ok			
+	@{parametersForSwapType}=	Run Keyword If	'${RecordType}'=='SWAPTYPE' and '${RecordId}'!='${EMPTY}'	Split String	${RecordId}	_	
+	@{parametersForHoliday}=	Run Keyword If	('${RecordType}'=='CALENDAR' or '${RecordType}'=='HOLIDAY') and '${RecordId}'!='${EMPTY}'	Split String	${RecordId}	_	
+	@{parametersForIndex}=	Run Keyword If	'${RecordType}'=='INDEXHISTORY' and '${RecordId}'!='${EMPTY}'	Split String	${RecordId}	_	
+	${noOfParameters}=	Run Keyword If	'${RecordType}'=='SWAPTYPE' and '${RecordId}'!='${EMPTY}'	Get Length	${parametersForSwapType}	ELSE IF	('${RecordType}'=='CALENDAR' or '${RecordType}'=='HOLIDAY') and '${RecordId}'!='${EMPTY}'	Get Length	${parametersForHoliday}
+	${status}	${response}=	Run Keyword And Ignore Error	Run Keyword If	'${RecordType}'=='SWAPTYPE' and '${RecordId}'!='${EMPTY}' and '${noOfParameters}'=='5'	refdataDeleteSwapTypeRecord	@{parametersForSwapType}[0]	@{parametersForSwapType}[1]	@{parametersForSwapType}[2]	@{parametersForSwapType}[3]	@{parametersForSwapType}[4]
+	...	ELSE IF	('${RecordType}'=='CALENDAR' or '${RecordType}'=='HOLIDAY') and '${RecordId}'!='${EMPTY}' and '${noOfParameters}'=='2'	refdataRemoveHoliday	@{parametersForHoliday}[0]	@{parametersForHoliday}[1]	
+	...	ELSE IF	'${RecordType}'=='INDEXHISTORY' and '${RecordId}'!='${EMPTY}'	refdataRemoveIndexRecord	@{parametersForIndex}[0]	@{parametersForIndex}[1]	
+	...	ELSE	refdataDeleteMaintenanceRecordUsingRecordType	${RecordType}	${RecordId}		
+	Should Contain	${response}	${Result}				
+							
+Add Maintenance Table Record For BookGroup	[Arguments]	@{FieldNameValuesList}					
+	${idValue}	Get Field Value For the Specified Field Name	Id	@{FieldNameValuesList}			
+	${descValue}	Get Field Value For the Specified Field Name	Desc	@{FieldNameValuesList}			
+	${ruleValue}	Get Field Value For the Specified Field Name	Rule	@{FieldNameValuesList}			
+	${response}=	Refdata Add Book Group Record	${idValue}	${descValue}	${ruleValue}		
+	[Return]	${response}					
+							
+Add Maintenance Table Record For CodeType	[Arguments]	@{FieldNameValuesList}					
+	${idValue}	Get Field Value For the Specified Field Name	Id	@{FieldNameValuesList}			
+	${descValue}	Get Field Value For the Specified Field Name	Desc	@{FieldNameValuesList}			
+	${response}=	Refdata Add CodeType	${idValue}	${descValue}			
+	[Return]	${response}					
+							
+Add Maintenance Table Record For CounterpartyGroup	[Arguments]	@{FieldNameValuesList}					
+	${idValue}	Get Field Value For the Specified Field Name	Id	@{FieldNameValuesList}			
+	${descValue}	Get Field Value For the Specified Field Name	Desc	@{FieldNameValuesList}			
+	${ruleValue}	Get Field Value For the Specified Field Name	Rule	@{FieldNameValuesList}			
+	${response}=	Refdata Add Counterparty Group Record	${idValue}	${descValue}	${ruleValue}		
+	[Return]	${response}					
+							
+Add Maintenance Table Record For Country	[Arguments]	@{FieldNameValuesList}					
+	${idValue}	Get Field Value For the Specified Field Name	Id	@{FieldNameValuesList}			
+	${descValue}	Get Field Value For the Specified Field Name	Desc	@{FieldNameValuesList}			
+	${currencyStrValue}	Get Field Value For the Specified Field Name	CurrencyStr	@{FieldNameValuesList}			
+	${response}=	Refdata Add Country Record	${idValue}	${descValue}	${currencyStrValue}		
+	[Return]	${response}					
+							
+Add Maintenance Table Record For InstrumentGroup	[Arguments]	@{FieldNameValuesList}					
+	${idValue}	Get Field Value For the Specified Field Name	Id	@{FieldNameValuesList}			
+	${descValue}	Get Field Value For the Specified Field Name	Desc	@{FieldNameValuesList}			
+	${ruleValue}	Get Field Value For the Specified Field Name	Rule	@{FieldNameValuesList}			
+	${response}=	Refdata Add Instrument Group Record	${idValue}	${descValue}	${ruleValue}		
+	[Return]	${response}					
+							
+Add Maintenance Table Record For InstrumentCustomField	[Arguments]	@{FieldNameValuesList}					
+	${idValue}	Get Field Value For the Specified Field Name	Id	@{FieldNameValuesList}			
+	${descValue}	Get Field Value For the Specified Field Name	Desc	@{FieldNameValuesList}			
+	${typeValue}	Get Field Value For the Specified Field Name	Type	@{FieldNameValuesList}			
+	${defaultValueExprValue}	Get Field Value For the Specified Field Name	DefaultValueExpr	@{FieldNameValuesList}			
+	${response}=	Refdata Add InstrumentCustomField Record	${idValue}	${descValue}	${typeValue}	${defaultValueExprValue}	
+	[Return]	${response}					
+							
+Add Maintenance Table Record For Location	[Arguments]	@{FieldNameValuesList}					
+	${idValue}	Get Field Value For the Specified Field Name	Id	@{FieldNameValuesList}			
+	${descValue}	Get Field Value For the Specified Field Name	Desc	@{FieldNameValuesList}			
+	${response}=	Refdata Add Location Record	${idValue}	${descValue}			
+	[Return]	${response}					
+							
+Add Maintenance Table Record For Index	[Arguments]	@{FieldNameValuesList}					
+	${indexValue}	Get Field Value For the Specified Field Name	IndexId	@{FieldNameValuesList}			
+	${yearValue}	Get Field Value For the Specified Field Name	Year	@{FieldNameValuesList}			
+	${response}=	Refdata Insert Index Record	${indexValue}	${yearValue}			
+	[Return]	${response}					
+							
+Get Record Id For Calendar Record	[Arguments]	@{FieldNameValuesList}					
+	${RecordId}=	Get Field Value For the Specified Field Name	CalendarId	@{FieldNameValuesList}			
+	[Return]	${RecordId}					

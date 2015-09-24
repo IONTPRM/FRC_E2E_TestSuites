@@ -1,0 +1,17 @@
+*Settings*							
+Resource	REFDATA_Common_Settings.tsv						
+Library	String						
+Library	Collections						
+Library	OperatingSystem						
+Library	Dialogs						
+Library	ITAS	1					
+Library	RefdataInternalKeywords	REFDATA	${COMMON REFDATA CURR}	20s			
+Library	com.iontrading.robotframework.keywords.CSVParser.InputDataKeywords						
+Resource	General_Purpose_Utility_Keywords.html						
+Resource	REFDATA_Instrument_Tables_Truncate_Utility.html						
+Resource	REFDATA_Database_Keywords_Utility.html						
+Resource	REFDATA_Start_Stop_Components.html						
+Resource	Configure_Platform_Utility.tsv						
+Resource	Configure_Scenario_Utility.tsv						
+Resource	REFDATA_Middleware_User_Keywords.tsv						
+Resource	KillAutoRobotKeyword.tsv						

@@ -1,0 +1,65 @@
+*Variable*	*Value*						
+#### PLATFORM DETAILS							
+${COMMON MKVCSHOST}	172.28.2.166						
+${COMMON MKVCSPORT}	21100						
+${COMMON MKVUSER}	Admin						
+${COMMON MKVPWD}	Admin						
+${COMMON DAEMON NAME}	DS_AUTOTESTS						
+#### DB DEPLOY TOOL DETAILS							
+${DB DEPLOY TOOL DIR}	E:${/}ION_Platform${/}DB_Update_Rollback_scripts${/}DB_DEPLOY_ToolSet${/}RD_DBMS_upg_toolset						
+${INPUT SCRIPT DIR}	E:${/}ION_Platform${/}DB_Update_Rollback_scripts${/}DB_DEPLOY_ToolSet${/}RD_DBMS_upg_toolset${/}scripts						
+${OUTPUT SCRIPT DIR}	E:${/}ION_Platform${/}DB_Update_Rollback_scripts${/}DB_DEPLOY_ToolSet${/}RD_DBMS_upg_toolset${/}output	#### OUTPUT DIRECTORY MENTIONED SHOULD ALREADY BE CREATED.					
+#### AUTOROBOT DETAILS							
+${COMMON AUTOROBOT COMP NAME}	AutoRobot						
+${COMMON AUTOROBOT SRC}	AUTOROBOT						
+${COMMON AUTOROBOT CURR}	EUR						
+#### DPLAYER DETAILS							
+${COMMON DPLAYER FILES DIR}	${TESTSUITE_ROOT}${/}BBGDplayerFiles						
+${COMMON DPLAYER EXE}	mkvdplayer301p4d1.exe						
+${COMMON DPLAYER BBGMDATA COMP NAME}	BBGMDATA						
+${COMMON DPLAYER BBGMDATA SRC}	BBGMDATA						
+${COMMON DPLAYER BBGMDATA CURR}	ANY						
+${COMMON DPLAYER BBGMDATA TYPE}	CM_INSTRUMENT_${COMMON DPLAYER BBGMDATA SRC}						
+${COMMON DPLAYER BBGMDATA SCRIPT FILE}	DPlayer.ips						
+#### PXE DETAILS							
+${COMMON PXE COMP NAME}	PXE						
+${COMMON PXE SRC}	PXE						
+${COMMON PXE CURR}	EUR						
+${COMMON PXE USER}	georgiev						
+${COMMON PXE PWD}	password						
+#### REFDATA DETAILS							
+${COMMON REFDATA COMP NAME}	REFDATA						
+${COMMON REFDATA SRC}	REFDATA						
+${COMMON REFDATA CURR}	EUR						
+${COMMON REFDATA EXE}	mkvrefdata_BRANCH.exe						
+${COMMON REFDATA COMP TYPE}	REFDATA						
+#### ROUTER DETAILS							
+${COMMON ROUTER SRC}	Router_M_Shared						
+${COMMON ROUTER COMP NAME}	Router_M_Shared						
+################# Common Time Outs							
+${WAIT CONNECT TIMEOUT MSEC}	300000						
+${WAIT COMP RUNNING TIMEOUT SEC}	60						
+${WAIT CREATE CONNECT TIMEOUT MSEC}	60000						
+${WAIT REMOVE CONNECTION TIMEOUT MSEC}	60000						
+${TIMEOUT_SEC}	10						
+${TIMEOUT_MSEC}	10000						
+${MKVWF_DEBUG}	5						
+${BOOKID}	USTShort						
+${TRADEENTRY SRC}	TRADEENTRY						
+${TRADEENTRY CURR}	EUR						
+${TRADESERVER SRC}	TRADESERVER						
+${TRADESERVER CURR}	EUR						
+${POSITION SRC}	POSITION						
+${POSITION CURR}	EUR						
+${RISK SRC}	RISK						
+${RISK CURR}	EUR						
+${DB TYPE}	ORACLE						
+${DB HOST}	172.28.2.167						
+${DB PORT}	1521						
+${DB NAME}	IPSOCU04						
+${DB USER}	reftrade						
+${DB PWD}	reftrade						
+${TRADEENTRY COMP NAME}	TradeEntry						
+${TRADESERVER COMP NAME}	TradeServer						
+${POSITION COMP NAME}	PositionServer						
+${RISK COMP NAME}	RiskServer						

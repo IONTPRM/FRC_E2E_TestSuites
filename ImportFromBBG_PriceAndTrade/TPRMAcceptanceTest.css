@@ -1,0 +1,218 @@
+/******************************************************************
+ * The CSS file to be used across all TPRM Acceptance Test Suites
+ ******************************************************************/
+
+/*
+ * Apply the same font across the entire page.
+ */
+body {
+	font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
+}
+
+/*
+ * The main test suite header, typically found at the very top of the page.
+ *
+ * Usage: <div class="title">Test Suite Title</div>
+ */
+.title {
+	font-size: 30px;
+	margin-left: 15px;
+	text-align: left;
+	color: #039;
+	font-weight: bold;
+}
+
+/*
+ * The description of the test suite, typically found under the test suite header.
+ *
+ * Usage: <div class="description">Description of the test suite</div>
+ */
+.description {
+	font-size: 15px;
+	margin-left: 15px;
+	text-align: left;
+	color: #039;
+}
+
+/*
+ * The documentation of the test suite, typically found under the test suite description and under test set indicator.
+ *
+ * Usage: <div class="documentation">Documentation of the test suite</div>
+ */
+.documentation {
+	margin: 15px;
+	font-size: 15px;
+	border: 1px solid #ccc;
+	padding: 15px;
+	background-color: #eef;
+}
+
+/**
+ * Styling to be used to indicate a set in test suite, when test cases are grouped into multiple sets.
+ *
+ * Usage: <div class="testset">Set of test cases</div>
+ */
+.testset {
+	font-size: 20px;
+	margin-left: 15px;
+	text-align: left;
+	color: #039;
+	font-style: italic;
+}
+
+/************ BEGIN CSS for the 'TestCase' table  ************/
+
+/*
+     * This styling should be used for "TestCase" table to help visually
+     * distinguish it from other tables.
+     *
+     * Usage: <table class="test-case-table">...</table>
+     */
+.test-case-table {
+	font-size: 12px;
+	margin: 15px;
+	border-collapse: collapse;
+	text-align: left;
+	color: #333;
+}
+
+.test-case-table tr:first-child td {
+	font-size: 13px;
+	font-weight: bold;
+	color: #039;
+	padding: 10px 8px !important;
+	border-left: 0px !important;
+	border-top: 0px !important;
+	border-right: 0px !important;
+	border-bottom: 2px solid #6678b1 !important;
+}
+
+.test-case-table td {
+	border: 1px solid #ccc;
+	padding: 6px 8px;
+	white-space: nowrap;
+}
+
+.test-case-table tr:hover td {
+	background-color: #eef;
+	color: #000;
+}
+
+/**
+ * Styling to be used for input fields of Test cases.
+ *
+ * <td class="input">Input field name</td>
+ */
+.input {
+	color: #186918 !important;
+}
+
+/**
+ * Styling to be used for output fields of Test cases.
+ *
+ * <td class="output">Output field name</td>
+ */
+.output {
+	color: #a33 !important;
+}
+/************ END CSS for the 'TestCase' table  ************/
+
+/************** BEGIN CSS for the 'Settings' table  **************/
+
+/*
+     * This styling should be used for "Settings" table to help visually
+     * distinguish it from other tables.
+     *
+     * Usage: <table class="settings-table">...</table>
+     */
+.settings-table {
+	white-space: nowrap;
+	font-size: 12px;
+	margin: 15px;
+	text-align: left;
+	border-collapse: collapse;
+}
+
+.settings-table  tr:first-child td {
+	font-size: 13px;
+	font-weight: bold;
+	color: #039;
+	padding: 10px 8px !important;
+	border-left: 0px !important;
+	border-top: 0px !important;
+	border-right: 0px !important;
+	border-bottom: 2px solid #6678b1 !important;
+	background: #FFFFFF;
+}
+
+.settings-table td {
+	white-space: nowrap;
+	text-align: left;
+	padding: 8px;
+	border: 1px solid #ccc;
+}
+
+.settings-table td:first-child {
+	background: #eef;
+}
+
+.settings-table tr:first-child td {
+	font-weight: bold;
+}
+
+.settings-table tr:hover td {
+	background-color: #eef;
+	color: #000;
+}
+
+/************** END CSS for the 'Settings' table  **************/
+
+/************** BEGIN CSS for the 'Variables' table  **************/
+
+/*
+     * This styling should be used for "Variables" table to help visually
+     * distinguish it from other tables.
+     *
+     * Usage: <table class="variables-table">...</table>
+     */
+.variables-table {
+	white-space: nowrap;
+	font-size: 12px;
+	margin: 15px;
+	text-align: left;
+	border-collapse: collapse;
+}
+
+.variables-table  tr:first-child td {
+	font-size: 13px;
+	font-weight: bold;
+	color: #039;
+	padding: 10px 8px !important;
+	border-left: 0px !important;
+	border-top: 0px !important;
+	border-right: 0px !important;
+	border-bottom: 2px solid #6678b1 !important;
+	background: #FFFFFF;
+}
+
+.variables-table td {
+	white-space: nowrap;
+	text-align: left;
+	padding: 8px;
+	border: 1px solid #ccc;
+}
+
+.variables-table td:first-child {
+	background: #eef;
+}
+
+.variables-table tr:first-child td {
+	font-weight: bold;
+}
+
+.variables-table tr:hover td {
+	background-color: #eef;
+	color: #000;
+}
+
+/************** END CSS for the 'Variables' table  **************/

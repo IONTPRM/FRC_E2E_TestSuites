@@ -1,0 +1,4 @@
+*Variables*							
+${DPLAYER BBG INPUT FILE}	InstrumentFalseUpdate_Input_BBG.tsv						
+${DPLAYER BBG SCRIPT FILE}	DPlayer_InstrumentFalseUpdate.ips						
+${DPLAYER BBG UPDATE INPUT FILE}	BBGMDATA_Instruments.tsv						

@@ -1,0 +1,58 @@
+*Settings*							
+Resource	CommonSettingsResources.tsv						
+Library	E2E_Utility.py						
+							
+*Keywords*							
+Suite Setup	Comment	Configure Refdata with BBG Dplayer as ExtIns source					
+	Install and Start Dplayer As BBG						
+	Login to PXE						
+	Set Suite Variable	@{list_instr_id}	@{EMPTY}				
+	${dict_having_extinstrid_wfinstrid}	Create Dictionary	${EMPTY}	${EMPTY}			
+	Set Suite Variable	${dict_having_extinstrid_wfinstrid}					
+							
+Suite Teardown	Stop Platform Component	${COMMON DPLAYER BBGMDATA COMP NAME}					
+	Remove Instruments From PXE	@{list_instr_id}					
+	Logout From PXE						
+	Cleanup For All Imported Instruments	@{list_instr_id}					
+	Restart Platform Component	${COMMON REFDATA COMP NAME}					
+	Restart Platform Component	${TRADESERVER COMP NAME}					
+							
+Import From BBG, Price in PXE, Trade in TPRM	[Arguments]	${instr_type}	${coupon_type}	${value}	${value_type}	${trd_value}	${verb}
+	...	${trd_qty}	${ts_price}	${ts_yield}	${ts_discount}	${ts_discountmargin}	${ts_trdstatusstr}
+	...	${ts_calcstatusstr}	${pos_nettradingpos}	${pos_postypestr}	${pos_statusstr}	${risk_pospnl}	${risk_tradingpnl}
+	...	${risk_netpnl}	${risk_statusstr}				
+	${external_instr_id}=	Select Correct Instrument To Import	${instr_type}	${coupon_type}			
+	${instr_already_imported}=	Check If Instrument Already Imported	${external_instr_id}				
+	${instr_id}=	Run Keyword If	'${instr_already_imported}' == 'False'	Import Instrument and Feed to PXE	${external_instr_id}		
+	...	ELSE	Get Refdata Instrument Id For Imported Instrument	${external_instr_id}			
+	Append To List	${list_instr_id}	${instr_id}				
+	Price instrument in PXE	${instr_id}	${value}	${value_type}			
+	${trade_id}=	Create Manual Trade	${instr_id}	${trd_value}	${value_type}	${verb}	${trd_qty}
+	Verify Tradeserver Fields	${trade_id}	Price	${ts_price}	Yield	${ts_yield}	Discount
+	...	${ts_discount}	DiscountMargin	${ts_discountmargin}	TradeStatusStr	${ts_trdstatusstr}	CalcStatusStr
+	...	${ts_calcstatusstr}					
+	Verify Position Fields	${instr_id}	${trade_id}	NetTradingPos	${pos_nettradingpos}	PositionTypeStr	${pos_postypestr}
+	...	StatusStr	${pos_statusstr}				
+	Verify Risk Fields	${instr_id}	${trade_id}	PosPnl	${risk_pospnl}	TradingPnl	${risk_tradingpnl}
+	...	NetPnl	${risk_netpnl}	StatusStr	${risk_statusstr}		
+							
+Import Instrument and Feed to PXE	[Arguments]	${ext_instr_id_to_import}					
+	Import Instrument From External Source as BBG	${ext_instr_id_to_import}					
+	${wf_instr_id}=	Get Instrument Id of imported instrument	${ext_instr_id_to_import}				
+	Feed Refdata Instrument To PXE	${wf_instr_id}					
+	Set To Dictionary	${dict_having_extinstrid_wfinstrid}	${ext_instr_id_to_import}	${wf_instr_id}			
+	[Return]	${wf_instr_id}					
+							
+Check If Instrument Already Imported	[Arguments]	${ext_instr_id}					
+	${list_all_ext_instrs_imported}=	Get Dictionary Keys	${dict_having_extinstrid_wfinstrid}				
+	${status}	Run Keyword And Return Status	List Should Contain Value	${list_all_ext_instrs_imported}	${ext_instr_id}		
+	[Return]	${status}					
+							
+Get Refdata Instrument Id For Imported Instrument	[Arguments]	${ext_instr_id}					
+	${wf_instr_id}=	Get From Dictionary	${dict_having_extinstrid_wfinstrid}	${ext_instr_id}			
+	[Return]	${wf_instr_id}					
+							
+Install and Start Dplayer As BBG	Install And Set Configurations for DPlayer Component As BBG						
+	DPlayer	Set Component Setting	${COMMON DPLAYER BBGMDATA COMP NAME}	INPUT_FILE_NAME	${COMMON DPLAYER FILES DIR}${/}${DPLAYER BBG UPDATE INPUT FILE}		
+	Start Platform Component	${COMMON DPLAYER BBGMDATA COMP NAME}					
+	Connect Components	${COMMON DPLAYER BBGMDATA COMP NAME}	${COMMON ROUTER COMP NAME}				

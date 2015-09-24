@@ -1,0 +1,147 @@
+*Keyword*							
+Call Function Expected Like Result	[Arguments]	${SourceName}	${FunctionName}	${Sepratorr}	${TimeOut}	${ResultLike}	@{Arguments}
+	Function Define With Separator	${SourceName}	${FunctionName}	${Sepratorr}	@{Arguments}		
+	Function Set Timeout	${TimeOut}s					
+	Function Verify Like Result	${ResultLike}					
+	${func_result}=	Function Call					
+	[Return]	${func_result.getObject(0)}					
+							
+Call InsertInstrument Expected Like Result	[Arguments]	${SourceName}	${Separator}	${InsType}	${ResultLike}	${TimeOut}	
+	Function Define With Separator	${SourceName}	InsertInstrument	${Separator}	InsType	${InsType}	
+	Function Set Timeout	${TimeOut}s					
+	Function Verify Like Result	${ResultLike}					
+	Function Wait Publish						
+	Function Call						
+							
+Transaction Call Expected Like Result	[Arguments]	${SourceName}	${SourceCurr}	${SourceTable}	${RecordId}	${ResultLike}	${TimeOut}
+	...	@{FieldValue}					
+	${RecordId}=	Transaction Define	${SourceName}	${SourceTable}	${SourceCurr}	${RecordId}	
+	Transaction Set Fields Values	@{FieldValue}					
+	Transaction Set Timeout	${TimeOut}s					
+	${resObj}=	Transaction Call					
+	${transactionResponse}=	Set Variable	${resObj.getErrMessage()}				
+	Should Contain	${transactionResponse}	${ResultLike}				
+							
+Verify Fields In Record	[Arguments]	${SourceName}	${SourceCurr}	${SourceTable}	${RecordId}	${TimeOut}	@{InputFieldNameValuePair}
+	@{fieldNameValueConvertedList}=	Convert FieldNameValueList to include quotes for the FieldNames with String Type	${SourceName}	${SourceCurr}	${SourceTable}	${RecordId}	${TimeOut}
+	...	@{InputFieldNameValuePair}					
+	${recordName}=	Record Define	${SourceName}	${SourceTable}	${SourceCurr}	${RecordId}	
+	Record Set Timeout	${recordName}	${TimeOut}s				
+	${recObj}=	Record Verify Fields	${recordName}	@{fieldNameValueConvertedList}			
+	Record Subscribe	${recordName}					
+	BuiltIn.Log	${recObj.getRecordName()}					
+	[Teardown]	Record Unsubscribe	${SourceCurr}.${SourceTable}.${SourceName}.${RecordId}				
+							
+Cut:	[Arguments]	${string}=					
+	${index:}=	Get Index From List	${string}	:			
+	${startIndex}=	Evaluate	${index:}+1				
+	${strout}=	Get Substring	${string}	${startIndex}			
+	[Return]	${strout}					
+							
+Get Arguments List For Function	[Arguments]	${ArgumentName}=	${ArgumentValue}=				
+	[Documentation]	"*Description:* This is the PRIVATE keyword used by keyword ""Function Call"" to get the argument list need for calling a function."					
+	${argumentList}=	Set Variable	${EMPTY}				
+	${result}	${msg}=	Run Keyword And Ignore Error	Should Be String	${ArgumentName}		
+	@{ArgumentNameList1}=	Run Keyword If	'${result}'=='PASS'	Split String	${ArgumentName}		
+	@{ArgumentNameList2}=	Run Keyword If	'${result}'=='FAIL'	Convert To List	${ArgumentName}		
+	@{ArgumentNameList}=	Set Variable If	'${result}'=='PASS'	${ArgumentNameList1}	${ArgumentNameList2}		
+	${result}	${msg}=	Run Keyword And Ignore Error	Should Be String	${ArgumentValue}		
+	@{argumentValueList1}=	Run Keyword If	'${result}'=='PASS'	Split String	${ArgumentValue}		
+	@{argumentValueList2}=	Run Keyword If	'${result}'=='FAIL'	Convert To List	${ArgumentValue}		
+	@{argumentValueList}=	Set Variable If	'${result}'=='PASS'	${argumentValueList 1}	${argumentValueList2}		
+	${noOfElementsArgumentName}=	Get Length	${ArgumentNameList}				
+	${noOfElementsArgumentValue}=	Get Length	${argumentValueList}				
+	Should Be True	'${noOfElementsArgumentName}'=='${noOfElementsArgumentValue}'					
+	@{Arg}	Create List					
+	: FOR	${n}	IN RANGE	0	${noOfElementsArgumentName}		
+		Append To List	${Arg}	@{ArgumentNameList}[${n}]	@{argumentValueList}[${n}]		
+		#	${ifEmpty}=	Catenate	SEPARATOR= |	#@{ArgumentNameList}[${n}]	@{argumentValueList}[${n}]
+		#	${ifNotEmpty}=	Catenate	SEPARATOR= |	#${argumentList}	@{ArgumentNameList}[${n}]
+		...	#@{argumentValueList}[${n}]				
+	#	${argumentList}=	Set Variable If	'${argumentList}'=='${EMPTY}'	#${ifEmpty}	${ifNotEmpty}	
+	#	[Return]	${argumentList}				
+	[Return]	@{Arg}					
+							
+Get Field Value From Record	[Arguments]	${SourceName}	${SourceCurr}	${SourceTable}	${RecordId}	${fieldName}	${TimeOut}
+	${recordName}=	Record Define	${SourceName}	${SourceTable}	${SourceCurr}	${RecordId}	
+	Record Set Timeout	${recordName}	${TimeOut}s				
+	${recObj}=	Record Subscribe Waiting Snapshot Record	${recordName}				
+	${fieldValue}=	Set Variable	${recObj.getFieldValue('${fieldName}')}				
+	[Teardown]	Record Unsubscribe	${SourceCurr}.${SourceTable}.${SourceName}.${RecordId}				
+	[Return]	${fieldValue}					
+							
+Get Field Values From Record	[Arguments]	${SourceName}	${SourceCurr}	${SourceTable}	${RecordId}	@{fieldNames}	
+	[Documentation]	"This keyword provides the ""FieldValuesList"" of the Input ""FieldNames"" as published on the platform"					
+	${recordName}=	Record Define	${SourceName}	${SourceTable}	${SourceCurr}	${RecordId}	
+	${recObj}=	Record Subscribe Waiting Snapshot Record	${recordName}				
+	@{fieldValues}=	Create List	@{EMPTY}				
+	: FOR	${fieldName}	IN	@{fieldNames}			
+		${fieldValueFromPlatform}=	Set Variable	${recObj.getFieldValue('${fieldName}')}			
+		Append To List	${fieldValues}	${fieldValueFromPlatform}			
+	Record UnSubscribe	${recordName}					
+	[Teardown]	Record Unsubscribe	${SourceCurr}.${SourceTable}.${SourceName}.${RecordId}				
+	[Return]	@{fieldValues}					
+							
+Call Function With Mandatory And Vararg Params Expected Like Result	[Arguments]	${SourceName}	${FunctionName}	${Sepratorr}	${TimeOut}	${ResultLike}	${MandatoryParamWithValues}
+	...	@{Arguments}					
+	[Documentation]	*Description:* This keyword has to be used when calling a function with both mandatory and vararg parameters.					
+	@{MandatoryFieldsNameValue}=	Split String	${MandatoryParamWithValues}				
+	Function Define With Separator	${SourceName}	${FunctionName}	${Sepratorr}	@{MandatoryFieldsNameValue}		
+	Function Set VarArgs	@{Arguments}					
+	Function Set Timeout	${TimeOut}s					
+	Function Verify Like Result	${ResultLike}					
+	${func_result}=	Function Call					
+	[Return]	${func_result.getObject(0)}					
+							
+Verify Record Unpublished	[Arguments]	${source}	${table}	${curr}	${id}	${timeout}	
+	${record name}=	Record Define	${source}	${table}	${curr}	${id}	
+	Record Set Timeout	${record name}	${timeout}s				
+	Record Wait Unpublish	${record name}					
+	Record Subscribe	${record name}					
+							
+Call InsertInstrument Expected Like Result Returning Id	[Arguments]	${SourceName}	${InsType}	${ResultLike}	${TimeOut}		
+	${TempInstrument}=	Call Function Expected Like Result	${SourceName}	InsertInstrument	_	${TimeOut}	${ResultLike}
+	...	InsType	${InsType}				
+	${TempInstrument}=	Cut:	${TempInstrument}				
+	[Return]	${TempInstrument}					
+							
+IsOperator	[Arguments]	${inputString}					
+	${equals}=	Set Variable	==				
+	${notEquals}=	Set Variable	!=				
+	${lessThan}=	Set Variable	<				
+	${lessThanEquals}=	Set Variable	<=				
+	${greaterThan}=	Set Variable	>				
+	${greaterThanEquals}=	Set Variable	>=				
+	${approximate}=	Set Variable	~				
+	${notApproximate}=	Set Variable	!~				
+	${isOperator}	Run Keyword And Return Status	Should Be True	'${inputString}'=='${equals}' or '${inputString}'=='${notEquals}' or '${inputString}'=='${lessThan}' or '${inputString}'=='${lessThanEquals}' or '${inputString}'=='${greaterThan}' or '${inputString}'=='${greaterThanEquals}' or '${inputString}'=='${approximate}' or '${inputString}'=='${notApproximate}'			
+	[Return]	${isOperator}					
+							
+Convert FieldNameValueList to include quotes for the FieldNames with String Type	[Arguments]	${SourceName}	${SourceCurr}	${SourceTable}	${RecordId}	${TimeOut}	@{InputFieldNameValuePair}
+	${recordName}=	Record Define	${SourceName}	${SourceTable}	${SourceCurr}	${RecordId}	
+	Record Set Timeout	${recordName}	${TimeOut}s				
+	${recObj}=	Record Subscribe Waiting Snapshot Record	${recordName}				
+	${listLength}	Get Length	${InputFieldNameValuePair}				
+	@{fieldNameValueList}	Copy List	${InputFieldNameValuePair}				
+	Return From Keyword If	${listLength}==0					
+	${secondElementIsOperator}=	Is Operator	@{InputFieldNameValuePair}[1]				
+	${iteratorStep}=	Set Variable If	${secondElementIsOperator}	3	2		
+	: FOR	${currentIndex}	IN RANGE	0	${listLength}	${iteratorStep}	
+		${nextIndex}	Evaluate	${currentIndex}+1			
+		${nextIndexValue}	Set Variable	@{InputFieldNameValuePair}[${nextIndex}]			
+		${isOperator}=	IsOperator	${nextIndexValue}			
+		${fieldValueIndex}=	Run Keyword If	${isOperator}	Evaluate	${currentIndex}+2	
+		...	ELSE	Evaluate	${currentIndex}+1		
+		${inputFieldName}=	Set Variable	@{InputFieldNameValuePair}[${currentIndex}]			
+		${inputFieldValue}=	Set Variable	@{InputFieldNameValuePair}[${fieldValueIndex}]			
+		${fieldTypeFromPlatform}=	Set Variable	${recObj.getRecordType().getFieldType('${inputFieldName}')}			
+		${value}=	Set Variable If	'${fieldTypeFromPlatform}'=='STR'	"""${inputFieldValue}"""	${inputFieldValue}	
+		Set List Value	${fieldNameValueList}	${fieldValueIndex}	${value}		
+	[Teardown]	Record Unsubscribe	${SourceCurr}.${SourceTable}.${SourceName}.${RecordId}				
+	[Return]	@{fieldNameValueList}					
+							
+Call CloneInstrument Expected Result Returning Id	[Arguments]	${SourceName}	${instrumentId}	${ResultLike}	${TimeOut}		
+	${TempInstrument}=	Call Function Expected Like Result	${SourceName}	CloneInstrument	_	${TimeOut}	${ResultLike}
+	...	Id	${instrumentId}				
+	${TempInstrument}=	Cut:	${TempInstrument}				
+	[Return]	${TempInstrument}					

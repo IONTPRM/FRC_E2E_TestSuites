@@ -1,0 +1,37 @@
+*Settings*							
+							
+*Keywords*							
+Install all the required components on to the platform	Install Refdata Component	${COMMON REFDATA COMP NAME}	${COMMON DAEMON NAME}	${COMMON REFDATA EXE}			
+	Install DPlayer Component	${COMMON DPLAYER CUSTOM PUB SRC}	${COMMON DPLAYER CUSTOM PUB COMP NAME}	${COMMON DPLAYER CUSTOM PUB CURR}	${COMMON DPLAYER CUSTOM PUB SCRIPT FILE}	${COMMON DAEMON NAME}	${COMMON DPLAYER EXE}
+	Install DPlayer Component	${COMMON DPLAYER BBGMDATA SRC}	${COMMON DPLAYER BBGMDATA COMP NAME}	${COMMON DPLAYER BBGMDATA CURR}	${COMMON DPLAYER BBGMDATA SCRIPT FILE}	${COMMON DAEMON NAME}	${COMMON DPLAYER EXE}
+							
+Install Refdata Component	[Arguments]	${ComponentName}	${DaemonName}	${Executable}			
+	[Documentation]	Installs the component if the component is not already installed on the platform, otherwise returns from the keyword.					
+	${isRDConfigured}	DPlayer	InfoComp	${ComponentName}			
+	Return From Keyword If	'${isRDConfigured}'!=''					
+	Log To Console	Installing Component ${ComponentName}					
+	DPlayer	Install Component	${ComponentName}				
+	DPlayer	Set Component Daemon	${ComponentName}	${DaemonName}			
+	DPlayer	Set Component Configuration	${ComponentName}	Executable	${Executable}		
+	DPlayer	Set Component Configuration	${ComponentName}	AddExtension	0		
+	DPlayer	Set Component Configuration	${ComponentName}	Component	REFDATA		
+	Log To Console	"Comp ""${ComponentName}"" installed successfully"					
+							
+Install DPlayer Component	[Arguments]	${Source}	${ComponentName}	${Currency}	${Script}	${DaemonName}	${Executable}
+	[Documentation]	Installs the component if the component is not already installed on the platform, otherwise returns from the keyword.					
+	${isDPlayerConfigured}	DPlayer	InfoComp	${ComponentName}			
+	Return From Keyword If	'${isDPlayerConfigured}'!=''					
+	Log To Console	Installing Component ${ComponentName}					
+	DPlayer	Install Component	${ComponentName}				
+	DPlayer	Set Component Daemon	${ComponentName}	${DaemonName}			
+	DPlayer	Set Component Configuration	${ComponentName}	Executable	${Executable}		
+	DPlayer	Set Component Configuration	${ComponentName}	AddExtension	0		
+	DPlayer	Set Component Configuration	${ComponentName}	Component	dplayer		
+	DPlayer	Set Component Setting	${ComponentName}	DTBLOCKING	1		
+	...	USEMSECS	1	ENABLE_LFH	1		
+	...	USER	${COMMON MKVUSER}	LISTEN	*		
+	...	CSPORT	${COMMON MKVCSPORT}	CSHOST	${COMMON MKVCSHOST}		
+	...	PWD	${COMMON MKVPWD}	COMPONENT	${ComponentName}		
+	...	SOURCE	${Source}	CURRENCY	${Currency}		
+	...	SCRIPT	${Script}				
+	Log To Console	"Comp ""${ComponentName}"" installed successfully"					

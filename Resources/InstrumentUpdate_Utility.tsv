@@ -1,0 +1,354 @@
+*Settings*							
+Resource	REFDATA_Common_MaintenanceTable_Record_Creation_Utility.tsv						
+Resource	Configure_Scenario_Utility.tsv						
+Resource	Configure_Platform_Utility.tsv						
+Resource	REFDATA_Common_Settings.tsv						
+Resource	InstrumentUpdate_Global_Variables.tsv						
+							
+*Variables*							
+${DPLAYER_BBG_LOG_FOLDER}	BBG_InstrumentUpdate						
+							
+*Keywords*							
+Common Suite Setup For Instrument Update	Start Robot Test Engine with Router						
+	SetFolderPath						
+	Set Configurations For Refdata Internal Keywords Library	${COMMON REFDATA SRC}					
+	Delete Generic Prop Fields In DB						
+	Insert Generic Prop Fields In DB						
+	Start Platform Components And Reset DB						
+	Add MBSTBATYPE Record For Verifying False Update on Pool Instrments						
+							
+Common Suite Teardown For Instrument Update	Run Keyword And Ignore Error	Delete MBSTBATYPE Record Created For Verifying False Update on Pool Instruments					
+	Log To Console	Stopping Components					
+	Stop Platform Component	${COMMON REFDATA COMP NAME}					
+	Stop Platform Component	${COMMON DPLAYER CUSTOM PUB COMP NAME}					
+	Stop Platform Component	${COMMON DPLAYER BBGMDATA COMP NAME}					
+	Stop Platform Component	${COMMON DPLAYER OUTPUT COMP NAME}					
+	Run Keyword And Ignore Error	DPlayer	Remove Component Setting	${COMMON DPLAYER CUSTOM PUB COMP NAME}	INPUT_FILE_NAME		
+	Run Keyword And Ignore Error	DPlayer	Remove Component Setting	${COMMON DPLAYER BBGMDATA COMP NAME}	INPUT_FILE_NAME		
+	Run Keyword And Ignore Error	DPlayer	Remove Component Setting	${COMMON DPLAYER OUTPUT COMP NAME}	INPUT_FILE_NAME		
+	Log To Console	Components Stopped Succesfully					
+	Reset Configurations For Refdata Internal Keywords Library						
+							
+Start Platform Components And Reset DB	Install Refdata Component, Clean DB And Start Refdata Component						
+	Install And Set Configurations for DPlayer Component As Custom Publisher						
+	Install And Set Configurations for DPlayer Component As BBG						
+	Install And Set Configurations for DPlayer Component For Output						
+	Connect Components	${COMMON REFDATA COMP NAME}	${COMMON ROUTER COMP NAME}				
+	Component Wait Status Running	${COMMON REFDATA SRC}	${COMMON REFDATA CURR}	${WAIT COMP RUNNING TIMEOUT SEC}			
+							
+Install Refdata Component, Clean DB And Start Refdata Component	Install Refdata Component	${COMMON REFDATA COMP NAME}	${COMMON DAEMON NAME}	${COMMON REFDATA EXE}			
+	Stop Platform Component	${COMMON REFDATA COMP NAME}					
+	InstrumentTablesTruncateFromDB	${COMMON DB TYPE}	${COMMON DB HOST}	${COMMON DB PORT}	${COMMON DB NAME}	${COMMON DB USER}	${COMMON DB PWD}
+	Delete MBSTBATYPE Record Created For Verifying False Update on Pool Instruments						
+	Clear LOGS Directory	${EXECDIR}${/}${REFDATA_LOG_FOLDER}					
+	Set Component MKV Init	${COMMON REFDATA COMP NAME}	@{MKV_INIT_REFDATA}				
+	Set Logs, Bin, DB, Work directory paths In Mkv.init to specific directory path	${COMMON REFDATA COMP NAME}	${EXECDIR}${/}${REFDATA_LOG_FOLDER}				
+	Copy Executable In Component Working Directory	${COMMON REFDATA EXE}	${COMMON REFDATA COMP NAME}	${EXECDIR}${/}${REFDATA_LOG_FOLDER}			
+	Start Platform Component	${COMMON REFDATA COMP NAME}					
+							
+Install And Set Configurations for DPlayer Component As Custom Publisher	Install DPlayer Component	${COMMON DPLAYER CUSTOM PUB SRC}	${COMMON DPLAYER CUSTOM PUB COMP NAME}	${COMMON DPLAYER CUSTOM PUB CURR}	${DPLAYER CUSTOM PUB SCRIPT FILE}	${COMMON DAEMON NAME}	${COMMON DPLAYER EXE}
+	Stop Platform Component	${COMMON DPLAYER CUSTOM PUB COMP NAME}					
+	Clear LOGS Directory	${EXECDIR}${/}${DPLAYER_CUSTOM_PUB_LOG_FOLDER}					
+	Set Logs, Bin, DB, Work directory paths In Mkv.init to specific directory path	${COMMON DPLAYER CUSTOM PUB COMP NAME}	${EXECDIR}${/}${DPLAYER_CUSTOM_PUB_LOG_FOLDER}				
+	Copy Executable In Component Working Directory	${COMMON DPLAYER EXE}	${COMMON DPLAYER CUSTOM PUB COMP NAME}	${EXECDIR}${/}${DPLAYER_CUSTOM_PUB_LOG_FOLDER}			
+	Copy DPlayer Script File From Suite Folder to the Working dir	${DPLAYER CUSTOM PUB SCRIPT FILE}	${EXECDIR}${/}${DPLAYER_CUSTOM_PUB_LOG_FOLDER}				
+							
+Install And Set Configurations for DPlayer Component As BBG	Log	${COMMON DPLAYER BBGMDATA SRC} ${COMMON DPLAYER BBGMDATA COMP NAME} ${COMMON DPLAYER BBGMDATA CURR} ${DPLAYER BBG SCRIPT FILE} ${COMMON DAEMON NAME} ${COMMON DPLAYER EXE}					
+	Install DPlayer Component	${COMMON DPLAYER BBGMDATA SRC}	${COMMON DPLAYER BBGMDATA COMP NAME}	${COMMON DPLAYER BBGMDATA CURR}	${DPLAYER BBG SCRIPT FILE}	${COMMON DAEMON NAME}	${COMMON DPLAYER EXE}
+	Stop Platform Component	${COMMON DPLAYER BBGMDATA COMP NAME}					
+	Clear LOGS Directory	${EXECDIR}${/}${DPLAYER_BBG_LOG_FOLDER}					
+	Set Logs, Bin, DB, Work directory paths In Mkv.init to specific directory path	${COMMON DPLAYER BBGMDATA COMP NAME}	${EXECDIR}${/}${DPLAYER_BBG_LOG_FOLDER}				
+	Copy Executable In Component Working Directory	${COMMON DPLAYER EXE}	${COMMON DPLAYER BBGMDATA COMP NAME}	${EXECDIR}${/}${DPLAYER_BBG_LOG_FOLDER}			
+	Copy DPlayer Script File From Suite Folder to the Working dir	${COMMON DPLAYER FILES DIR}${/}${DPLAYER BBG SCRIPT FILE}	${EXECDIR}${/}${DPLAYER_BBG_LOG_FOLDER}				
+							
+Install And Set Configurations for DPlayer Component For Output	Install DPlayer Component	${COMMON DPLAYER OUTPUT SRC}	${COMMON DPLAYER OUTPUT COMP NAME}	${COMMON DPLAYER OUTPUT CURR}	${DPLAYER OUTPUT SCRIPT FILE}	${COMMON DAEMON NAME}	${COMMON DPLAYER EXE}
+	Stop Platform Component	${COMMON DPLAYER OUTPUT COMP NAME}					
+	Clear LOGS Directory	${EXECDIR}${/}${DPLAYER_OUTPUT_LOG_FOLDER}					
+	Set Logs, Bin, DB, Work directory paths In Mkv.init to specific directory path	${COMMON DPLAYER OUTPUT COMP NAME}	${EXECDIR}${/}${DPLAYER_OUTPUT_LOG_FOLDER}				
+	Copy Executable In Component Working Directory	${COMMON DPLAYER EXE}	${COMMON DPLAYER OUTPUT COMP NAME}	${EXECDIR}${/}${DPLAYER_OUTPUT_LOG_FOLDER}			
+	Copy DPlayer Script File From Suite Folder to the Working dir	${DPLAYER OUTPUT SCRIPT FILE}	${EXECDIR}${/}${DPLAYER_OUTPUT_LOG_FOLDER}				
+							
+Connect All Components To Router	[Arguments]	@{CompNamesList}					
+	: FOR	${component}	IN	@{CompNamesList}			
+		Connect Components	${component}	${COMMON ROUTER COMP NAME}			
+							
+Import Instrument From External Source as Custom Publisher and Bounce the Connection between External Source & Refdata	[Arguments]	@{InstrumentsToBeImportedFromExternalSource}					
+	DPlayer	Set Component Setting	${COMMON DPLAYER CUSTOM PUB COMP NAME}	INPUT_FILE_NAME	${CURRENT_SUITE_DIRECTORY}${/}${DPLAYER CUSTOM PUB INPUT FILE}	SCRIPT	${DPLAYER CUSTOM PUB SCRIPT FILE}
+	Start Platform Component	${COMMON DPLAYER CUSTOM PUB COMP NAME}					
+	Connect Components	${COMMON DPLAYER CUSTOM PUB COMP NAME}	${COMMON ROUTER COMP NAME}				
+	Component Wait Status Running	${COMMON DPLAYER CUSTOM PUB SRC}	${COMMON DPLAYER CUSTOM PUB CURR}	${WAIT COMP RUNNING TIMEOUT SEC}			
+	: FOR	${instrumentId}	IN	@{InstrumentsToBeImportedFromExternalSource}			
+		Call Function Expected Like Result	${COMMON DPLAYER CUSTOM PUB SRC}	PublishInstrumentFromInputFile	_	${TIMEOUT_SEC}	Ok
+		...	RecordId	${instrumentId}			
+	Verify All Instruments From External Source are successfully imported into Refdata	${COMMON DPLAYER CUSTOM PUB SRC}	@{InstrumentsToBeImportedFromExternalSource}				
+	Bounce Connection Between Refdata & External Source						
+							
+Import Instrument From External Source as Custom Publisher publishing Alternate Fields and Bounce the Connection between External Source & Refdata	[Arguments]	@{InstrumentsToBeImportedFromExternalSource}					
+	DPlayer	Set Component Setting	${COMMON DPLAYER CUSTOM PUB COMP NAME}	INPUT_FILE_NAME	${CURRENT_SUITE_DIRECTORY}${/}${DPLAYER CUSTOM PUB INPUT FILE ALTERNATE FIELDS}	SCRIPT	${DPLAYER CUSTOM PUB SCRIPT FILE}
+	Start Platform Component	${COMMON DPLAYER CUSTOM PUB COMP NAME}					
+	Connect Components	${COMMON DPLAYER CUSTOM PUB COMP NAME}	${COMMON ROUTER COMP NAME}				
+	Component Wait Status Running	${COMMON DPLAYER CUSTOM PUB SRC}	${COMMON DPLAYER CUSTOM PUB CURR}	${WAIT COMP RUNNING TIMEOUT SEC}			
+	: FOR	${instrumentId}	IN	@{InstrumentsToBeImportedFromExternalSource}			
+		Call Function Expected Like Result	${COMMON DPLAYER CUSTOM PUB SRC}	PublishInstrumentFromInputFile	_	${TIMEOUT_SEC}	Ok
+		...	RecordId	${instrumentId}			
+	Verify All Instruments From External Source are successfully imported into Refdata	${COMMON DPLAYER CUSTOM PUB SRC}	@{InstrumentsToBeImportedFromExternalSource}				
+	Bounce Connection Between Refdata & External Source						
+							
+Import Instrument From External Source as BBG and Bounce the Connection between External Source & Refdata	[Arguments]	@{InstrumentsToBeImportedFromExternalSource}					
+	DPlayer	Set Component Setting	${COMMON DPLAYER BBGMDATA COMP NAME}	INPUT_FILE_NAME	${CURRENT_SUITE_DIRECTORY}${/}${DPLAYER BBG INPUT FILE}	SCRIPT	${DPLAYER BBG SCRIPT FILE}
+	Start Platform Component	${COMMON DPLAYER BBGMDATA COMP NAME}					
+	Connect Components	${COMMON DPLAYER BBGMDATA COMP NAME}	${COMMON ROUTER COMP NAME}				
+	Component Wait Status Running	${COMMON DPLAYER BBGMDATA SRC}	${COMMON DPLAYER BBGMDATA CURR}	${WAIT COMP RUNNING TIMEOUT SEC}			
+	: FOR	${instrumentId}	IN	@{InstrumentsToBeImportedFromExternalSource}			
+		Call Function Expected Like Result	${COMMON DPLAYER BBGMDATA SRC}	PublishInstrumentFromInputFile	_	${TIMEOUT_SEC}	Ok
+		...	RecordId	${instrumentId}			
+	Verify All Instruments From External Source are successfully imported into Refdata	${COMMON DPLAYER BBGMDATA SRC}	@{InstrumentsToBeImportedFromExternalSource}				
+	Bounce Connection Between Refdata & External Source						
+							
+Import Instrument From External Source as BBG publishing Alternate Fields and Bounce the Connection between External Source & Refdata	[Arguments]	@{InstrumentsToBeImportedFromExternalSource}					
+	DPlayer	Set Component Setting	${COMMON DPLAYER BBGMDATA COMP NAME}	INPUT_FILE_NAME	${CURRENT_SUITE_DIRECTORY}${/}${DPLAYER BBG INPUT FILE ALTERNATE FIELDS}	SCRIPT	${DPLAYER BBG SCRIPT FILE}
+	Start Platform Component	${COMMON DPLAYER BBGMDATA COMP NAME}					
+	Connect Components	${COMMON DPLAYER BBGMDATA COMP NAME}	${COMMON ROUTER COMP NAME}				
+	Component Wait Status Running	${COMMON DPLAYER BBGMDATA SRC}	${COMMON DPLAYER BBGMDATA CURR}	${WAIT COMP RUNNING TIMEOUT SEC}			
+	: FOR	${instrumentId}	IN	@{InstrumentsToBeImportedFromExternalSource}			
+		Call Function Expected Like Result	${COMMON DPLAYER BBGMDATA SRC}	PublishInstrumentFromInputFile	_	${TIMEOUT_SEC}	Ok
+		...	RecordId	${instrumentId}			
+	Verify All Instruments From External Source are successfully imported into Refdata	${COMMON DPLAYER BBGMDATA SRC}	@{InstrumentsToBeImportedFromExternalSource}				
+	Bounce Connection Between Refdata & External Source						
+							
+Import Instrument From External Source as BBG	[Arguments]	@{InstrumentsToBeImportedFromExternalSource}					
+	: FOR	${instrumentId}	IN	@{InstrumentsToBeImportedFromExternalSource}			
+		Call Function Expected Like Result	${COMMON DPLAYER BBGMDATA SRC}	PublishInstrumentFromInputFile	_	${TIMEOUT_SEC}	Ok
+		...	RecordId	${instrumentId}			
+	Verify All Instruments From External Source are successfully imported into Refdata	${COMMON DPLAYER BBGMDATA SRC}	@{InstrumentsToBeImportedFromExternalSource}				
+							
+Get Contents from Input File, Publish Chain and Type for External Source As Custom Publisher	[Arguments]	${InputFile}					
+	${contents}	Get Contents of Input File	${InputFile}				
+	Set Suite Variable	${DPLAYER CUSTOM PUB INPUT FILE CONTENT}	${contents}				
+	@{inputFieldName}=	Get Input Field Names	${DPLAYER CUSTOM PUB INPUT FILE CONTENT}				
+	Set Suite Variable	@{DPLAYER CUSTOM PUB FIELD NAME LIST}	@{inputFieldName}				
+	@{inputFieldType}=	Get Input Field Types	${DPLAYER CUSTOM PUB INPUT FILE CONTENT}				
+	Set Suite Variable	@{DPLAYER CUSTOM PUB FIELD TYPE LIST}	@{inputFieldType}				
+	Publish Type From External Source	${COMMON DPLAYER CUSTOM PUB SRC}	${COMMON DPLAYER CUSTOM PUB TYPE}	${DPLAYER CUSTOM PUB FIELD NAME LIST}	${DPLAYER CUSTOM PUB FIELD TYPE LIST}		
+	Publish Chain From External Source	${COMMON DPLAYER CUSTOM PUB SRC}	${COMMON DPLAYER CUSTOM PUB CURR}	${COMMON DPLAYER CUSTOM PUB TYPE}	CM_INSTRUMENT	INSTRUMENT	
+							
+Get Contents from Input File, Publish Chain and Type for External Source As BBG	[Arguments]	${InputFile}					
+	${contents}	Get Contents of Input File	${InputFile}				
+	Set Suite Variable	${DPLAYER BBG INPUT FILE CONTENT}	${contents}				
+	@{inputFieldName}=	Get Input Field Names	${DPLAYER BBG INPUT FILE CONTENT}				
+	Set Suite Variable	@{DPLAYER BBG FIELD NAME LIST}	@{inputFieldName}				
+	@{inputFieldType}=	Get Input Field Types	${DPLAYER BBG INPUT FILE CONTENT}				
+	Set Suite Variable	@{DPLAYER BBG FIELD TYPE LIST}	@{inputFieldType}				
+	Publish Type From External Source	${COMMON DPLAYER BBGMDATA SRC}	${COMMON DPLAYER BBGMDATA TYPE}	${DPLAYER BBG FIELD NAME LIST}	${DPLAYER BBG FIELD TYPE LIST}		
+	Publish Chain From External Source	${COMMON DPLAYER BBGMDATA SRC}	${COMMON DPLAYER BBGMDATA CURR}	${COMMON DPLAYER BBGMDATA TYPE}	CM_INSTRUMENT	INSTRUMENT	
+							
+Publish All Records From External Pubilsher as CIP	[Arguments]	@{InstrumentsToBeImportedFromExternalSource}					
+	: FOR	${instrumentId}	IN	@{InstrumentsToBeImportedFromExternalSource}			
+		@{inputFieldValuesList}	Get Input Field Values	${DPLAYER CUSTOM PUB INPUT FILE CONTENT}	${instrumentId}		
+		Supply Record From External Source	${COMMON DPLAYER CUSTOM PUB SRC}	${COMMON DPLAYER CUSTOM PUB CURR}	${COMMON DPLAYER CUSTOM PUB TYPE}	CM_INSTRUMENT	INSTRUMENT
+		...	${instrumentId}	${DPLAYER CUSTOM PUB FIELD NAME LIST}	${DPLAYER CUSTOM PUB FIELD TYPE LIST}	${inputFieldValuesList}	
+							
+Publish All Records From External Pubilsher as BBG	[Arguments]	@{InstrumentsToBeImportedFromExternalSource}					
+	: FOR	${instrumentId}	IN	@{InstrumentsToBeImportedFromExternalSource}			
+		@{inputFieldValuesList}	Get Input Field Values	${DPLAYER BBG INPUT FILE CONTENT}	${instrumentId}		
+		Supply Record From External Source	${COMMON DPLAYER BBGMDATA SRC}	${COMMON DPLAYER BBGMDATA CURR}	${COMMON DPLAYER BBGMDATA TYPE}	CM_INSTRUMENT	INSTRUMENT
+		...	${instrumentId}	${DPLAYER BBG FIELD NAME LIST}	${DPLAYER BBG FIELD TYPE LIST}	${inputFieldValuesList}	
+							
+Verify All Instruments From External Source are successfully imported into Refdata	[Arguments]	${ExternalSource}	@{InstrumentIds}				
+	: FOR	${instrumentId}	IN	@{InstrumentIds}			
+		Verify Instrument Successfully Imported to Refdata	${ExternalSource}	${instrumentId}			
+							
+Verify Instrument Successfully Imported to Refdata	[Arguments]	${ExternalSource}	${InstrumentId}				
+	Verify Fields In Record	${COMMON REFDATA SRC}	${COMMON REFDATA CURR}	INSTRUMENTMAPPING	${ExternalSource}_${InstrumentId}	${TIMEOUT_SEC}	StatusStr
+	...	Complete	ImportStatusStr	Inserted			
+	${RefDataInstId}	Get Field Value From Record	${COMMON REFDATA SRC}	${COMMON REFDATA CURR}	INSTRUMENTMAPPING	${ExternalSource}_${InstrumentId}	TargetId
+	...	${TIMEOUT_SEC}					
+	Should not be Empty	${RefDataInstId}	Target Id is Empty				
+							
+Publish Updated Supply and Verify Instrument update when BBG	[Arguments]	${ImportRecordId}	${UpdRecordId}	${StatusStr}	${ImportStatusStr}	${Result}	
+	Call Function Expected Like Result	${COMMON DPLAYER BBGMDATA SRC}	PublishInstrumentFromInputFile	_	${TIMEOUT_SEC}	Ok	RecordId
+	...	${UpdRecordId}					
+	Verify Fields In Record	${COMMON REFDATA SRC}	${COMMON REFDATA CURR}	INSTRUMENTMAPPING	${COMMON DPLAYER BBGMDATA SRC}_${UpdRecordId}	${TIMEOUT_SEC}	StatusStr
+	...	${StatusStr}	ImportStatusStr	${ImportStatusStr}			
+	${RefDataInstId}	Get Field Value From Record	${COMMON REFDATA SRC}	${COMMON REFDATA CURR}	INSTRUMENTMAPPING	${COMMON DPLAYER BBGMDATA SRC}_${ImportRecordId}	TargetId
+	...	${TIMEOUT_SEC}					
+	${RefDataInstIdUpd}	Get Field Value From Record	${COMMON REFDATA SRC}	${COMMON REFDATA CURR}	INSTRUMENTMAPPING	${COMMON DPLAYER BBGMDATA SRC}_${UpdRecordId}	TargetId
+	...	${TIMEOUT_SEC}					
+	Should be Equal	${RefDataInstId}	${RefDataInstIdUpd}				
+	Comment	Verify Updated Fields Value	${UpdRecordId}	${RefDataInstIdUpd}	${UpdRecordId}	${Result}	
+	Run Keyword if	'${RefDataInstId}'!='${EMPTY}'	Verify Updated Fields Value	${UpdRecordId}	${RefDataInstIdUpd}	${UpdRecordId}	${Result}
+	Run Keyword if	'${RefDataInstId}'=='${EMPTY}'	Log To Console	Instrument \ ${UpdRecordId} is not Imported/Update			
+							
+Bounce Connection Between Refdata & External Source	Disconnect Components	${COMMON REFDATA SRC}	${COMMON ROUTER SRC}				
+	Connect Components	${COMMON REFDATA SRC}	${COMMON ROUTER SRC}				
+							
+Get Contents of Input File	[Arguments]	${InputFile}					
+	${contents}=	Get File	${InputFile}	encoding=UTF-8			
+	[Return]	${contents}					
+							
+Get Contents of Output File	${contents}=	Get File	${OUTPUT_TSV_FILENAME_PATH}	encoding=UTF-8			
+	Set Global Variable	${OUTPUT_FILE_CONTENT}	${contents}				
+							
+Get Input Field Names	[Arguments]	${InputFileContent}					
+	@{nameList}=	Create List	@{EMPTY}				
+	${rowIndexFieldName}	${columnIndexFieldName}=	Get Row Index & Column Index Matching a particular string	${InputFileContent}	FieldName		
+	${nextRowIndex}=	Evaluate	${rowIndexFieldName} + 1				
+	${totalNoOfRows}=	Get Line Count	${InputFileContent}				
+	: FOR	${n}	IN RANGE	${nextRowIndex}	${totalNoOfRows}		
+		${rowContent}=	Get Line	${InputFileContent}	${n}		
+		@{splittedString}=	Split String	${rowContent}	\t		
+		${fieldName}=	Get From List	${splittedString}	${columnIndexFieldName}		
+		Append To List	${nameList}	${fieldName}			
+	[Return]	@{nameList}					
+							
+Get Input Field Types	[Arguments]	${InputFileContent}					
+	@{typeList}=	Create List	@{EMPTY}				
+	${rowIndexFieldType}	${columnIndexFieldType}=	Get Row Index & Column Index Matching a particular string	${InputFileContent}	FieldType		
+	${nextRowIndex}=	Evaluate	${rowIndexFieldType} + 1				
+	${totalNoOfRows}=	Get Line Count	${InputFileContent}				
+	: FOR	${n}	IN RANGE	${nextRowIndex}	${totalNoOfRows}		
+		${rowContent}=	Get Line	${InputFileContent}	${n}		
+		@{splittedString}=	Split String	${rowContent}	\t		
+		${fieldType}=	Get From List	${splittedString}	${columnIndexFieldType}		
+		Append To List	${typeList}	${fieldType}			
+	[Return]	@{typeList}					
+							
+Get Input Field Values	[Arguments]	${InputFileContent}	${InstrumentId}				
+	@{valueList}=	Create List	@{EMPTY}				
+	${rowIndexInstrumentId}	${columnIndexFieldValue}=	Get Row Index & Column Index Matching a particular string	${InputFileContent}	${InstrumentId}		
+	${nextRowIndex}=	Evaluate	${rowIndexInstrumentId} + 1				
+	${totalNoOfRows}=	Get Line Count	${InputFileContent}				
+	: FOR	${n}	IN RANGE	${nextRowIndex}	${totalNoOfRows}		
+		${rowContent}=	Get Line	${InputFileContent}	${n}		
+		@{splittedString}=	Split String	${rowContent}	\t		
+		${fieldValue}=	Get From List	${splittedString}	${columnIndexFieldValue}		
+		Append To List	${valueList}	${fieldValue}			
+	[Return]	@{valueList}					
+							
+Get Row Index & Column Index Matching a particular string	[Arguments]	${FileContent}	${InputString}				
+	@{lines}=	Split To Lines	${FileContent}				
+	${totalNoOfRows}=	Get Length	${lines}				
+	${rowContainingString}=	Set Variable	${EMPTY}				
+	${rowIndex}=	Set Variable	${EMPTY}				
+	${columnIndex}=	Set Variable	${EMPTY}				
+	: FOR	${n}	IN RANGE	0	${totalNoOfRows}		
+		@{splittedString}=	Split String	@{lines}[${n}]	\t		
+		${count}=	Count Values In List	${splittedString}	${InputString}		
+		${columnIndex}=	Run Keyword If	'${count}'!='0'	Get Index From List	${splittedString}	${InputString}
+		${rowIndex}=	Set Variable If	'${count}'!='0'	${n}		
+		${rowContainingString}=	Set Variable If	'${count}'!='0'	@{lines}[${n}]		
+		Exit For Loop If	'${count}'!='0'				
+	Log	${rowContainingString}					
+	Log	${rowIndex}					
+	Log	${columnIndex}					
+	@{outputString}=	Create List	${rowIndex}	${columnIndex}			
+	[Return]	@{outputString}					
+							
+Supply Record From External Source	[Arguments]	${Source}	${Currency}	${Type}	${Table}	${ChainName}	${RecordId}
+	...	${FieldNameList}	${FieldTypeList}	${FieldValueList}			
+	${recordName}=	Set Variable	${Currency}.${Table}.${Source}.${RecordId}				
+	${chainName}=	Set Variable	${Currency}.${Table}.${Source}.${ChainName}				
+	Publish Record From External Source	${Source}	${Currency}	${Type}	${Table}	${RecordId}	
+	${fieldNameCount}=	Get Length	${FieldNameList}				
+	${fieldValueCount}=	Get Length	${FieldValueList}				
+	Should Be True	'${fieldNameCount}'=='${fieldValueCount}'					
+	${supplyArgs}=	Set Variable	${EMPTY}				
+	: FOR	${n}	IN RANGE	0	${fieldNameCount}		
+		${supplyArgs}=	Run Keyword If	'${supplyArgs}'=='${EMPTY}'	Catenate	{@{FieldNameList}[${n}]}	{@{FieldValueList}[${n}]}
+		...	ELSE IF	'${supplyArgs}'!='${EMPTY}'	Catenate	${supplyArgs}	{@{FieldNameList}[${n}]}
+		...	{@{FieldValueList}[${n}]}				
+	Call Function Expected Like Result	${Source}	SupplyRecord	_	${TIMEOUT_SEC}	Ok	recordName
+	...	${recordName}	supplyArgs	${supplyArgs}			
+	Add Record To Chain	${Source}	${chainName}	${recordName}			
+							
+Verify no false update when CIP	[Arguments]	${ExternalSourceId}	${StatusStrAfterBouncingConnection}	${ImportStatusStrAfterBouncingConnection}			
+	${ExternalSource}	Set Variable	${COMMON DPLAYER CUSTOM PUB SRC}				
+	Verify Fields In Record	${COMMON REFDATA SRC}	${COMMON REFDATA CURR}	INSTRUMENTMAPPING	${ExternalSource}_${ExternalSourceId}	${TIMEOUT_SEC}	StatusStr
+	...	${StatusStrAfterBouncingConnection}	ImportStatusStr	${ImportStatusStrAfterBouncingConnection}			
+							
+Verify no false update when BBG	[Arguments]	${ExternalSourceId}	${StatusStrAfterBouncingConnection}	${ImportStatusStrAfterBouncingConnection}			
+	${ExternalSource}	Set Variable	${COMMON DPLAYER BBGMDATA SRC}				
+	Verify Fields In Record	${COMMON REFDATA SRC}	${COMMON REFDATA CURR}	INSTRUMENTMAPPING	${ExternalSource}_${ExternalSourceId}	${TIMEOUT_SEC}	StatusStr
+	...	${StatusStrAfterBouncingConnection}	ImportStatusStr	${ImportStatusStrAfterBouncingConnection}			
+							
+Start DPlayer as Custom Publisher	Run Keyword And Ignore Error	Stop Manual Component	${COMMON DPLAYER CUSTOM PUB COMP NAME}				
+	Clear LOGS Directory	${EXECDIR}${/}${DPLAYER_CUSTOM_PUB_LOG_FOLDER}					
+	Start Manual Component	${COMMON DPLAYER CUSTOM PUB COMP NAME}	${COMMON DPLAYER EXE}	${COMMON DPLAYER CUSTOM PUB COMP NAME}	${EXECDIR}	${MKV_INIT_DPLAYER_CUSTOM_PUB}	${CURRENT_SUITE_DIRECTORY}${/}${COMMON DPLAYER CUSTOM PUB SCRIPT FILE}
+							
+Start DPlayer as BBG	Run Keyword And Ignore Error	Stop Manual Component	${COMMON DPLAYER BBGMDATA COMP NAME}				
+	Clear LOGS Directory	${EXECDIR}${/}${DPLAYER_BBG_LOG_FOLDER}					
+	Start Manual Component	${COMMON DPLAYER BBGMDATA COMP NAME}	${COMMON DPLAYER EXE}	${COMMON DPLAYER BBGMDATA COMP NAME}	${EXECDIR}	${MKV_INIT_DPLAYER_BBG}	${CURRENT_SUITE_DIRECTORY}${/}${COMMON DPLAYER BBGMDATA SCRIPT FILE}
+							
+UnPublish Data From External Source as Custom Publisher	[Arguments]	@{InstrumentsToBeUnpublishedFromExternalSource}					
+	: FOR	${instrumentId}	IN	@{InstrumentsToBeUnpublishedFromExternalSource}			
+		UnPublish Record From External Source	${COMMON DPLAYER CUSTOM PUB SRC}	${COMMON DPLAYER CUSTOM PUB CURR}	CM_INSTRUMENT	${instrumentId}	
+	UnPublish Chain From External Source	${COMMON DPLAYER CUSTOM PUB SRC}	${COMMON DPLAYER CUSTOM PUB CURR}	CM_INSTRUMENT	INSTRUMENT		
+	UnPublish Type From External Source	${COMMON DPLAYER CUSTOM PUB SRC}	${COMMON DPLAYER CUSTOM PUB TYPE}				
+							
+UnPublish Data From External Source as BBG	[Arguments]	@{InstrumentsToBeUnpublishedFromExternalSource}					
+	: FOR	${instrumentId}	IN	@{InstrumentsToBeUnpublishedFromExternalSource}			
+		UnPublish Record From External Source	${COMMON DPLAYER BBGMDATA SRC}	${COMMON DPLAYER BBGMDATA CURR}	CM_INSTRUMENT	${instrumentId}	
+	UnPublish Chain From External Source	${COMMON DPLAYER BBGMDATA SRC}	${COMMON DPLAYER BBGMDATA CURR}	CM_INSTRUMENT	INSTRUMENT		
+	UnPublish Type From External Source	${COMMON DPLAYER BBGMDATA SRC}	${COMMON DPLAYER BBGMDATA TYPE}				
+							
+Verify correct schedule precision when BBG	[Arguments]	${ExtId}	${ExtBulkField}	${RdScheduleValueField}	${Precision}		
+	${RdId}=	Get Field Value From Record	${COMMON REFDATA SRC}	${COMMON REFDATA CURR}	INSTRUMENTMAPPING	${COMMON DPLAYER BBGMDATA SRC}_${ExtId}	TargetId
+	...	${TIMEOUT_SEC}					
+	${BulkFieldContent}=	Get Field Value From Record	${COMMON DPLAYER BBGMDATA SRC}	${COMMON DPLAYER BBGMDATA CURR}	CM_INSTRUMENT	${ExtId}	${ExtBulkField}
+	...	${TIMEOUT_SEC}					
+	@{BulkFieldList}=	Split String	${BulkFieldContent}	;			
+	${BulkFieldList}=	Remove From List	${BulkFieldList}	0			
+	${Precision}=	Evaluate	${Precision}-12				
+	${ExpectedRdFieldValue}=	Set Variable	${EMPTY}				
+	# We recognize values in the bulk field by doing a substr until the dot '.' and checking if the substr is different from the full string. Values in BBG bulk fields have a 12-digit precision						
+	: FOR	${item}	IN	@{BulkFieldList}			
+		${tmp}=	String.Get Substring	${item}		${Precision}	
+		${tmp}=	Catenate	${ExpectedRdFieldValue}	${tmp}		
+		${substr}=	String.Fetch From Left	${item}	.		
+		${ExpectedRdFieldValue}=	Set Variable If	'${substr}'!='${item}'	${tmp}	${ExpectedRdFieldValue}	
+	${ExpectedRdFieldValue}=	String.Get Substring	${ExpectedRdFieldValue}	1			
+	Verify Fields In Record	${COMMON REFDATA SRC}	${COMMON REFDATA CURR}	CM_INSTRUMENT	${RdId}	${TIMEOUT_SEC}	${RdScheduleValueField}
+	...	${ExpectedRdFieldValue}					
+							
+Verify Updated Fields Value	[Arguments]	${OutputRecordName}	${InstrumentId}	${RecordId}	${Result}		
+	${returnFields}	Call Function ExpectedLike Result	${COMMON DPLAYER OUTPUT SRC}	GetFieldNameAndValueFromInputFile	_	${TIMEOUT_SEC}	0:
+	...	InputRecordName	${OutputRecordName}	RecordId	${RecordId}		
+	${returnFields}	Cut:	${returnFields}				
+	${returnFields}	Replace String	${returnFields}	:: == ::	::==::		
+	${returnFields}	Replace String	${returnFields}	${SPACE}::${SPACE}	::		
+	${returnFields}	Replace String	${returnFields}	::${SPACE}	::		
+	@{returnFieldsList}	Split String	${returnFields}	::			
+	${length}	Get Length	${returnFieldsList}				
+	Verify Fields In Record	${COMMON REFDATA SRC}	${COMMON REFDATA CURR}	CM_INSTRUMENT	${InstrumentId}	${TIMEOUT_SEC}	@{returnFieldsList}
+							
+Add MBSTBATYPE Record For Verifying False Update on Pool Instrments	${recordId}	Refdata Add Maintenance Record Using Record Type	MBSTBATYPE	@{FIELD_NAMES_VALUES_MBSTBATYPE_CREATION}			
+							
+Delete MBSTBATYPE Record Created For Verifying False Update on Pool Instruments	SQL Connect to DBMS	${COMMON DB TYPE}	${COMMON DB HOST}	${COMMON DB PORT}	${COMMON DB NAME}	${COMMON DB USER}	${COMMON DB PWD}
+	${indexId}=	Get Index From List	${FIELD_NAMES_VALUES_MBSTBATYPE_CREATION}	Id			
+	${indexValueId}=	Evaluate	${indexId}+1				
+	${recordId}	Get From List	${FIELD_NAMES_VALUES_MBSTBATYPE_CREATION}	${indexValueId}			
+	${DeleteStatement1}=	Set Variable	DELETE FROM FW_mtg_hdr_prop WHERE hdr_id_base = '${recordId}'				
+	SQL Execute Procedure	${DeleteStatement1}					
+	${DeleteStatement2}=	Set Variable	DELETE FROM FW_mtg_hdr_desc where hdr_desc_id = '${recordId}'				
+	SQL Execute Procedure	${DeleteStatement2}					
+	SQL Disconnect from DBMS						
+							
+Insert Generic Prop Fields In DB	SQL Connect to DBMS	${COMMON DB TYPE}	${COMMON DB HOST}	${COMMON DB PORT}	${COMMON DB NAME}	${COMMON DB USER}	${COMMON DB PWD}
+	SQL Execute Procedure	insert into FW_generic_prop_desc values('AB','D','AvgLife','AvgLife','str',1)					
+	SQL Execute Procedure	insert into FW_generic_prop_desc values('AB','D','Index','Index','lng',1)					
+	SQL Disconnect from DBMS						
+							
+Delete Generic Prop Fields In DB	SQL Connect to DBMS	${COMMON DB TYPE}	${COMMON DB HOST}	${COMMON DB PORT}	${COMMON DB NAME}	${COMMON DB USER}	${COMMON DB PWD}
+	SQL Execute Procedure	DELETE FROM FW_generic_prop_desc					
+	SQL Execute Procedure	DELETE FROM FW_generic_prop					
+	SQL Disconnect from DBMS						
+							
+Start Components to Import Instrument From External Source as BBG	[Arguments]	@{InstrumentsToBeImportedFromExternalSource}					
+	DPlayer	Set Component Setting	${COMMON DPLAYER BBGMDATA COMP NAME}	INPUT_FILE_NAME	${CURRENT_SUITE_DIRECTORY}${/}${DPLAYER BBG UPDATE INPUT FILE}	SCRIPT	${DPLAYER BBG SCRIPT FILE}
+	DPlayer	Set Component Setting	${COMMON DPLAYER OUTPUT COMP NAME}	INPUT_FILE_NAME	${CURRENT_SUITE_DIRECTORY}${/}${DPLAYER OUTPUT FILE}	SCRIPT	${DPLAYER OUTPUT SCRIPT FILE}
+	Start Platform Component	${COMMON DPLAYER BBGMDATA COMP NAME}					
+	Connect Components	${COMMON DPLAYER BBGMDATA COMP NAME}	${COMMON ROUTER COMP NAME}				
+	Component Wait Status Running	${COMMON DPLAYER BBGMDATA SRC}	${COMMON DPLAYER BBGMDATA CURR}	${WAIT COMP RUNNING TIMEOUT SEC}			
+	Start Platform Component	${COMMON DPLAYER OUTPUT COMP NAME}					
+	Connect Components	${COMMON DPLAYER OUTPUT COMP NAME}	${COMMON ROUTER COMP NAME}				
+	Component Wait Status Running	${COMMON DPLAYER OUTPUT SRC}	${COMMON DPLAYER OUTPUT CURR}	${WAIT COMP RUNNING TIMEOUT SEC}			
