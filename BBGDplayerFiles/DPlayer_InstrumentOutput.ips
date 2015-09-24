@@ -1,0 +1,180 @@
+
+while {![registered]} {wait 100}
+
+proc PublishCM_STATUS {SourceName SourceCurr} {
+
+	logtrace "Publishing record in CM_STATUS"
+	
+	set typeName ${SourceName}_CM_STATUS
+	set recordName ${SourceCurr}.CM_STATUS.${SourceName}.GSTATUS
+	
+	type $typeName {Id} String {CStatus} Integer {CStatusStr} String
+	record $recordName $typeName
+	
+	supply $recordName {Id} GSTATUS {CStatus} 120 {CStatusStr} Running
+}
+
+proc ReadInputFile {filename} {
+
+	global INPUTDATA SEPRATOR
+	logtrace "Inside ReadInputFile...."
+	set fname $filename
+	if { [file exists $fname] } {
+	logtrace "File  $fname exist ......."
+	set infile [open $fname r]
+	set linenum 0 
+		while { [gets $infile input] >= 0 } {
+			logtrace "input = $input"
+			set INPUTDATA($linenum) $input			
+			incr linenum			
+			}
+	}	
+}
+
+proc PublishType {} {
+
+	global typeName chainName INPUTDATA SEPRATOR
+	
+	set pubType ""
+	set fieldNameIndex [eval GetColumnIndexFromHeader FieldName]
+	set fieldTypeIndex [eval GetColumnIndexFromHeader FieldType]
+	
+	set length [eval GetNumberOfRows]
+
+	for {set x 1} {$x<$length} {incr x} {
+			set data [split $INPUTDATA($x) $SEPRATOR]
+			set pubType [concat $pubType "{[lindex $data $fieldNameIndex]}" "[lindex $data $fieldTypeIndex]"]
+	}
+
+	logtrace "Publishing Type : type $typeName $pubType"
+	eval type $typeName $pubType
+}
+
+proc GetColumnIndexFromHeader {columnHeader} {
+
+	global INPUTDATA SEPRATOR
+	set index 0
+	set index [lsearch -exact [split $INPUTDATA(0) $SEPRATOR] $columnHeader]
+	return $index
+}
+
+proc GetNumberOfRows {} {
+	global INPUTDATA SEPRATOR
+	set length [array size INPUTDATA]
+	logtrace "length  $length"
+	
+	return $length
+}
+
+
+proc PublishChain {} {
+
+	global typeName chainName
+	logtrace "Publishing chain $chainName $typeName"
+	chain $chainName $typeName
+}
+
+proc defaultvalue {fieldtype} {
+	set NaN 1.#QNAN
+	set MIN_INT -2147483648
+	
+	switch -nocase $fieldtype Integer {set dv $MIN_INT} String {set dv ""} Real {set dv  $NaN} Date {set dv $MIN_INT} Time {set dv $MIN_INT}
+	
+	return $dv
+}
+
+proc GetFieldNameAndValueFromInputFile {arg1 RecordId} {
+	global typeName chainName INPUTDATA SEPRATOR SourceName SourceCurr
+	logtrace "GetFieldNameAndValueFromInputFile( arg1 : $arg1 , RecordId : $RecordId )"
+	set ColumnIndex [eval GetColumnIndexFromHeader $RecordId]
+	set RowsCount [eval GetNumberOfRows]	
+	set FieldName_Value ""
+	set index 1
+	set length [expr {$RowsCount - 1}]
+	for {set x 1} {$x< $RowsCount} {incr x} {
+			#logtrace "inside for loop"
+			set data [split $INPUTDATA($x) $SEPRATOR]
+			#set FieldName_Value [concat $FieldName_Value "[lindex $data 0]::==::[lindex $data 1]"]
+			if {$x != $length } {
+					set FieldName_Value [concat $FieldName_Value "[lindex $data 1]::==::[lindex $data $ColumnIndex]::"]
+			} else {
+				set FieldName_Value [concat $FieldName_Value "[string trim [lindex $data 1]]::==::[lindex $data $ColumnIndex]"]
+			}
+			
+			#logtrace "data  $data"
+			#	lappend FieldName_Value [string trim [lindex $data 0] ","]
+			#	lappend FieldName_Value ::
+			#	lappend FieldName_Value ==
+			#	lappend FieldName_Value ::
+			#	lappend	FieldName_Value [string trim [lindex $data $ColumnIndex]]
+			#	if {$x != $length } {
+			#		lappend	FieldName_Value ::
+			#	}
+	}
+	
+	
+	logtrace "FieldName_Value  $FieldName_Value"
+	#set FieldName_Value1 "AccrualDateAdjType  ::  ==  ::  12  ::  AccrualDateAdjTypeStr  ::  ==  ::  a"
+	set returnVal 0:$FieldName_Value
+	return $returnVal
+}
+
+proc PublishInstrumentFromInputFile {arg1 RecordId} {
+
+	global typeName chainName INPUTDATA SEPRATOR SourceName SourceCurr
+	
+	set fieldNameIndex [eval GetColumnIndexFromHeader FieldName]
+	set fieldValueIndex [eval GetColumnIndexFromHeader $RecordId]
+	set fieldTypeIndex [eval GetColumnIndexFromHeader FieldType]
+	set RowsCount [eval GetNumberOfRows]	
+	set supplyRecordData ""
+	
+	set recordName ${SourceCurr}.CM_INSTRUMENT.${SourceName}.${RecordId}
+	logtrace "Publishing Record :  $recordName $typeName"
+	record $recordName $typeName	
+	
+	for {set x 1} {$x< $RowsCount} {incr x} {
+
+			set data [split $INPUTDATA($x) $SEPRATOR]
+			set inputFieldValue [lindex $data $fieldValueIndex]
+			logtrace "inputFieldValue $inputFieldValue"
+			#set fieldValue [expr {[string trim $inputFieldValue]==""? [defaultvalue [lindex $data $fieldTypeIndex]] : $inputFieldValue}]
+			logtrace "fieldValue $fieldValue"
+			set supplyRecordData [concat $supplyRecordData "{[string trim [lindex $data $fieldNameIndex][}" "{$inputFieldValue}"]
+	}
+	
+	logtrace "Supply Data :  supply $recordName $supplyRecordData"
+	eval supply $recordName $supplyRecordData
+	cappend $chainName $recordName
+	return 0:Ok
+}
+ 
+proc main {} { 
+
+	global typeName chainName SEPRATOR INPUTDATA SourceCurr SourceName
+	
+	set SourceName [getstr SOURCE DPLAYER]	
+	set SourceCurr [getstr CURRENCY EUR]
+	set InputFileName [getstr INPUT_FILE_NAME Input.tsv]
+
+	# PUBLISHING CM_STATUS FOR THE DPLAYER	
+	PublishCM_STATUS $SourceName $SourceCurr
+
+	set typeName ${SourceName}_CM_INSTRUMENT_TYPE
+	set chainName ${SourceCurr}.CM_INSTRUMENT.${SourceName}.INSTRUMENT
+	set SEPRATOR "\t"
+
+
+	logtrace "InputFileName  $InputFileName"
+	logtrace "SEPRATOR  $SEPRATOR"
+	
+	ReadInputFile $InputFileName
+	PublishType
+	PublishChain
+	
+	function ${SourceName}_PublishInstrumentFromInputFile String RecordId String PublishInstrumentFromInputFile
+	function ${SourceName}_GetFieldNameAndValueFromInputFile String RecordId String GetFieldNameAndValueFromInputFile	
+	while {1} {wait 1000} 
+ } 
+
+ main

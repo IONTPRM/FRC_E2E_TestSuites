@@ -1,0 +1,109 @@
+while {![registered]} {wait 100}
+
+proc PublishCM_STATUS {SourceName} {
+
+	logtrace "Publishing record in CM_STATUS"
+	
+	set typeName ${SourceName}_CM_STATUS
+	set recordName EUR.CM_STATUS.${SourceName}.GSTATUS
+	
+	type $typeName {Id} String {CStatus} Integer {CStatusStr} String
+	record $recordName $typeName
+	
+	supply $recordName {Id} GSTATUS {CStatus} 120 {CStatusStr} Running
+}
+
+proc getSourceName {} {
+
+	set sourceName [getstr {SOURCE} DPLAYER]
+
+	logtrace "sourceName: $sourceName"
+
+	return $sourceName
+}
+
+
+proc PublishType {returnArg typeName typeArgs} {
+
+	logtrace "Publishing Type... Name: $typeName, Args: $typeArgs"
+	eval type $typeName $typeArgs
+	
+	return "0:Ok"
+}
+
+proc PublishChain {returnArg typeName chainName} {
+
+	logtrace "Publishing Chain... TypeName: $typeName, ChainName: $chainName"
+	chain $chainName $typeName
+	return "0:Ok"
+}
+
+proc PublishRecord {returnArg typeName recordName} {
+	
+	logtrace "Publishing Record... TypeName: $typeName, RecordName: $recordName"
+	record $recordName $typeName
+	
+	return "0:Ok"
+}
+
+proc SupplyRecord {returnArg recordName supplyArgs} {
+
+	logtrace "Supplying Record... RecordName: $recordName, Args: $supplyArgs"
+	eval supply $recordName $supplyArgs
+	
+	return "0:Ok"
+}
+
+proc AddRecordToChain {returnArg chainName recordName} {
+	
+	logtrace "Adding Record To Chain... RecordName: $recordName, ChainName: $chainName"
+	cappend $chainName $recordName
+
+	return "0:Ok"
+}
+
+proc UnPublishType {returnArg typeName} {
+
+	logtrace "Unpublishing Type... Name: $typeName"
+	purge type $typeName
+	
+	return "0:Ok"
+}
+
+proc UnPublishRecord {returnArg recordName} {
+
+	logtrace "Unpublishing Record... RecordName: $recordName"
+	purge record $recordName
+	
+	return "0:Ok"
+}
+
+proc UnPublishChain {returnArg chainName} {
+
+	logtrace "Unpublishing Chain... ChainName: $chainName"
+	purge chain $chainName
+	
+	return "0:Ok"
+}
+
+proc main {} { 
+
+	set sourceName [eval getSourceName]
+	
+	PublishCM_STATUS $sourceName
+	
+	function ${sourceName}_UnPublishType String typeName String UnPublishType
+	function ${sourceName}_UnPublishRecord String recordName String UnPublishRecord
+	function ${sourceName}_UnPublishChain String chainName String UnPublishChain
+	function ${sourceName}_PublishType String typeName String typeArgs String PublishType
+	function ${sourceName}_PublishRecord String typeName String recordName String PublishRecord
+	function ${sourceName}_PublishChain String typeName String chainName String PublishChain
+	function ${sourceName}_SupplyRecord String recordName String supplyArgs String SupplyRecord
+	function ${sourceName}_AddRecordToChain String chainName String recordName String AddRecordToChain
+
+	while {1} {wait 1000} 
+ } 
+
+main
+
+
