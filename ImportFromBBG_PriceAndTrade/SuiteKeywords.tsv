@@ -1,6 +1,6 @@
 *Settings*							
 Resource	CommonSettingsResources.tsv						
-Library	E2E_Utility.py						
+Library	%{TESTSUITE_ROOT}${/}Resources${/}E2E_Utility.py						
 							
 *Keywords*							
 Suite Setup	Comment	Configure Refdata with BBG Dplayer as ExtIns source					

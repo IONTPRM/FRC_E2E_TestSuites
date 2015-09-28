@@ -14,13 +14,13 @@ Resource	%{TESTSUITE_ROOT}${/}Resources${/}Configure_Platform_Utility.tsv
 Resource	%{TESTSUITE_ROOT}${/}Resources${/}Configure_Scenario_Utility.tsv						
 Resource	%{TESTSUITE_ROOT}${/}Resources${/}InstrumentUpdate_Utility.tsv						
 Resource	%{TESTSUITE_ROOT}${/}Resources${/}SQL_UserKeywords_103.txt						
-Library	E2E_Utility.py						
-Library	E2E_PXE.py						
-Library	E2E_Refdata.py						
-Library	E2E_Tradeentry.py						
-Library	E2E_Tradeserver.py						
-Library	E2E_Position.py						
-Library	E2E_Risk.py						
+Library	%{TESTSUITE_ROOT}${/}Resources${/}E2E_Utility.py						
+Library	%{TESTSUITE_ROOT}${/}Resources${/}E2E_PXE.py						
+Library	%{TESTSUITE_ROOT}${/}Resources${/}E2E_Refdata.py						
+Library	%{TESTSUITE_ROOT}${/}Resources${/}E2E_Tradeentry.py						
+Library	%{TESTSUITE_ROOT}${/}Resources${/}E2E_Tradeserver.py						
+Library	%{TESTSUITE_ROOT}${/}Resources${/}E2E_Position.py						
+Library	%{TESTSUITE_ROOT}${/}Resources${/}E2E_Risk.py						
 							
 *Variables*							
 ${TESTSUITE_ROOT}	C:\\E2E_Tests_Dev\\TestSuites						
