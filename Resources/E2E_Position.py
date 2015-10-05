@@ -10,6 +10,7 @@ from function_error_exception import FunctionErrorException
 import E2E_Utility
 import E2E_PXE
 import E2E_Tradeserver
+import robot.libraries.Dialogs
 
 _pos_positiondetails_table_prefix = '${POSITION CURR}.POSITIONDETAILS.${POSITION SRC}' 
 def get_positiondetails_record_id(book_id, instr_id, date_settl):
