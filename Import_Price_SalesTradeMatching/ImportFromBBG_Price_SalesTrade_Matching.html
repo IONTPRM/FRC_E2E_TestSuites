@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>ImportFromBBG_Price_SalesTrade_Matching</title>
+<link rel="stylesheet" type="text/css" href="../../Resources/TPRMAcceptanceTest.css">
+</head>
+<body style="body">
+<p class="documentation"
+	style="font-family: Calibri">In this suite we are verifying following workflow -<br>
+1) Instrument is imported from BBG (correctly imported in Refdata and fed to PXE)<br>
+2) Priced in PXE (priced as per the instrument's price type with 'Manual Price' model)<br>
+3) Create sales trade manually, position/P&amp;L should not  change<br>
+4) Match above sales trade, corresponding trader trade should get updated correctly, position and P&amp;L should get updated<br>
+</p>
+<br>
+	<table class="settings-table"
+		style="text-align: left; width: 808px; height: 112px" border="1"
+		cellpadding="2" cellspacing="2">
+		<tbody>
+			<tr>
+				<td style="vertical-align: top; width: 206px;">Settings<br>
+				</td>
+				<td style="vertical-align: top; width: 305px;">Value<br>
+				</td>
+				<td style="vertical-align: top; width: 215px;">Value<br>
+				</td>
+			</tr>
+			<tr>
+				<td style="vertical-align: top; width: 206px;">Suite Setup<br>
+				</td>
+				<td style="vertical-align: top; width: 305px;">Suite Setup<br>
+				</td>
+				<td style="vertical-align: top; width: 215px;"><br></td>
+			</tr>
+			<tr>
+				<td style="vertical-align: top; width: 206px;">Suite Teardown<br>
+				</td>
+				<td style="vertical-align: top; width: 305px;">Suite Teardown<br>
+				</td>
+				<td style="vertical-align: top; width: 215px;"><br></td>
+			</tr>
+			<tr>
+				<td style="vertical-align: top; width: 206px;">Resource<br>
+				</td>
+				<td style="vertical-align: top; width: 305px;">%{TESTSUITE_ROOT}${/}Resources${/}CommonLibrariesAndResources.tsv<br>
+				</td>
+				<td style="vertical-align: top; width: 215px;"><br></td>
+			</tr>
+			<tr>
+				<td style="vertical-align: top; width: 206px;">Resource</td>
+				<td style="vertical-align: top; width: 305px;">SuiteKeywords.tsv<br>
+				</td>
+				<td style="vertical-align: top; width: 215px;"><br></td>
+			</tr>
+
+		</tbody>
+	</table>
+<br>
+	<table class="test-case-table"
+		style="text-align: left; width: 1110px; height: 100px;" border="1"
+		cellpadding="2" cellspacing="2">
+
+		<tbody>
+			<tr>
+				<td style="vertical-align: top;">Test Case<br>
+				</td>
+				<td style="vertical-align: top;">Action<br>
+				</td>
+				<td class="input" style="vertical-align: top;">Instrument Type<br>
+				</td>
+				<td class="input" style="vertical-align: top;">Coupon Type<br>
+				</td>
+				<td class="input" style="vertical-align: top;">Value<br>
+				</td>
+				<td class="input" style="vertical-align: top;">ValueType<br>
+				</td>
+				<td class="input" style="vertical-align: top;">Trade Value<br>
+				</td>
+				<td class="input" style="vertical-align: top;">Verb<br>
+				</td>
+				<td class="input" style="vertical-align: top;">Trade Qty<br>
+				</td>
+				<td>CP Key</td>
+				<td class="output" style="vertical-align: top;">TS Price<br>
+				</td>
+				<td class="output" style="vertical-align: top;">TS Yield<br>
+				</td>
+				<td class="output" style="vertical-align: top;">TS Discount<br>
+				</td>
+				<td class="output" style="vertical-align: top;">TS
+					DiscountMargin<br>
+				</td>
+				<td class="output" style="vertical-align: top;">TS
+					TradeStatusStr<br>
+				</td>
+				<td class="output" style="vertical-align: top;">TS
+					CalcStatusStr<br>
+				</td>
+				<td>Pos NetTradingPos<br>(SalesTrade)<br></td>
+				<td>Pos StatusStr<br>(SalesTrade)<br></td>
+				<td>Match Status<br>(TraderTrade)</td>
+				<td class="output" style="vertical-align: top;">Pos
+					NetTradingPos<br>(TraderTrade)
+				</td>
+				<td class="output" style="vertical-align: top;">Pos
+					PositionTypeStr<br>(TraderTrade)
+
+				</td>
+				<td class="output" style="vertical-align: top;">Pos StatusStr<br>(TraderTrade)
+
+				</td>
+				<td class="output" style="vertical-align: top;">Risk PosPnl<br>(TraderTrade)
+				</td>
+				<td class="output" style="vertical-align: top;">Risk TradingPnl<br>(TraderTrade)
+
+				</td>
+				<td class="output" style="vertical-align: top;">Risk NetPnl<br>(TraderTrade)
+
+				</td>
+				<td class="output" style="vertical-align: top;">Risk StatusStr<br>(TraderTrade)
+
+				</td>
+			</tr>
+			<tr>
+				<td style="vertical-align: top;">Import a Fixed Treasury, price
+					it, create sales trade and match it<br>with manual trade supplied with  blank counterparty<br>
+				</td>
+				<td style="vertical-align: top;">Import From BBG, Price in PXE,
+					Create sales trade and send<br>manual trader trade to match
+					sales trade<br>
+				</td>
+				<td style="vertical-align: top;">T Note<br>
+				</td>
+				<td style="vertical-align: top;">Fixed<br>
+				</td>
+				<td style="vertical-align: top;">99.75<br>
+				</td>
+				<td style="vertical-align: top;">Price<br>
+				</td>
+				<td style="vertical-align: top;">99.50<br>
+				</td>
+				<td style="vertical-align: top;">Buy<br>
+				</td>
+				<td style="vertical-align: top;">1<br>
+				</td>
+				<td>${EMPTY}</td>
+				<td style="vertical-align: top;">99.50<br>
+				</td>
+				<td style="vertical-align: top;">value_ret_by_pxe<br>
+				</td>
+				<td style="vertical-align: top;">value_ret_by_pxe<br>
+				</td>
+				<td style="vertical-align: top;">value_ret_by_pxe<br>
+				</td>
+				<td style="vertical-align: top;">Open<br>
+				</td>
+				<td style="vertical-align: top;">Ok<br>
+				</td>
+				<td>No Change</td>
+				<td>No Change</td>
+				<td>M</td>
+				<td style="vertical-align: top;">1<br>
+				</td>
+				<td style="vertical-align: top;">Open<br>
+				</td>
+				<td style="vertical-align: top;">Valid<br>
+				</td>
+				<td style="vertical-align: top;">0<br>
+				</td>
+				<td style="vertical-align: top;">2500<br>
+				</td>
+				<td style="vertical-align: top;">2500<br>
+				</td>
+				<td style="vertical-align: top;">Valid<br>
+				</td>
+			</tr>
+			<tr>
+				<td style="vertical-align: top;">Import a Fixed Treasury, price
+					it, create sales trade and match it with<br>manual trade supplied witn non-empty counteryparty<br></td>
+				<td style="vertical-align: top;">Import From BBG, Price in PXE,
+					Create sales trade and send<br>manual trader trade to match
+					sales trade</td>
+				<td style="vertical-align: top;">Corp</td>
+				<td style="vertical-align: top;">Floater</td>
+				<td style="vertical-align: top;">99.85</td>
+				<td style="vertical-align: top;">Price</td>
+				<td style="vertical-align: top;">99.55</td>
+				<td style="vertical-align: top;">Buy</td>
+				<td style="vertical-align: top;">1</td>
+				<td>${CPKey}</td>
+				<td style="vertical-align: top;">99.55</td>
+				<td style="vertical-align: top;">value_ret_by_pxe</td>
+				<td style="vertical-align: top;">value_ret_by_pxe</td>
+				<td style="vertical-align: top;">value_ret_by_pxe</td>
+				<td style="vertical-align: top;">Open</td>
+				<td style="vertical-align: top;">Ok</td>
+				<td>No Change</td>
+				<td>No Change</td>
+				<td>B</td>
+				<td style="vertical-align: top;">1</td>
+				<td style="vertical-align: top;">Open</td>
+				<td style="vertical-align: top;">Valid</td>
+				<td style="vertical-align: top;">0</td>
+				<td style="vertical-align: top;">3000</td>
+				<td style="vertical-align: top;">3000</td>
+				<td style="vertical-align: top;">Valid</td>
+			</tr>
+
+		</tbody>
+	</table>
+
+</body>
+</html>

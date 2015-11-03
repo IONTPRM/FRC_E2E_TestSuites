@@ -2,7 +2,7 @@
 Resource	REFDATA_Common_MaintenanceTable_Record_Creation_Utility.tsv						
 Resource	Configure_Scenario_Utility.tsv						
 Resource	Configure_Platform_Utility.tsv						
-Resource	REFDATA_Common_Settings.tsv						
+Resource	Common_Variables.tsv						
 Resource	InstrumentUpdate_Global_Variables.tsv						
 							
 *Variables*							

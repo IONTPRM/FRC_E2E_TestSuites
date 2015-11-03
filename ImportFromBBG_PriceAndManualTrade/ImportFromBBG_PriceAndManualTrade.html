@@ -3,10 +3,16 @@
 <head>
 <meta charset="ISO-8859-1">
 <title>ImportFromBBG_PriceAndTrade</title>
-<link rel="stylesheet" type="text/css" href="TPRMAcceptanceTest.css">
+<link rel="stylesheet" type="text/css" href="../../Resources/TPRMAcceptanceTest.css">
 </head>
 <body style="body">
-<p>In this suite we are verifying following workflow -<br>1) Instrument is imported from BBG (correctly imported in Refdata and fed to PXE)<br>2) Priced in PXE (priced as per the instrument's price type with 'Manual Price' model)<br>3) Create trade from market gateway on instrument having same code/cusip<br>4) Verify trade reached in TPRM (got analytics from PXE, Risk got prices from PXE, PnL calculated corrctly)</p>
+<p class="documentation"
+	style="font-family: Calibri">
+In this suite we are verifying following workflow -<br>
+1) Instrument is imported from BBG (correctly imported in Refdata and fed to PXE)<br>
+2) Priced in PXE (priced as per the instrument's price type with 'Manual Price' model)<br>
+3) Traded manually in TPRM (got analytics from PXE, Risk got prices from PXE, PnL calculated correctly)
+</p>
 <br>
 	<table class="settings-table"
 		style="text-align: left; width: 808px; height: 112px" border="1"
@@ -37,7 +43,7 @@
 			<tr>
 				<td style="vertical-align: top; width: 206px;">Resource<br>
 				</td>
-				<td style="vertical-align: top; width: 305px;">CommonSettingsResources.tsv<br>
+				<td style="vertical-align: top; width: 305px;">%{TESTSUITE_ROOT}${/}Resources${/}CommonLibrariesAndResources.tsv<br>
 				</td>
 				<td style="vertical-align: top; width: 215px;"><br></td>
 			</tr>
@@ -101,7 +107,7 @@
       </td>
     </tr>
     <tr>
-      <td style="vertical-align: top;">Trading on New Instrument<br>
+      <td style="vertical-align: top;">Import a Fixed Treasury, price it and create manual trade<br>
       </td>
       <td style="vertical-align: top;">Import From BBG, Price in PXE, Trade in TPRM<br>
       </td>
@@ -193,7 +199,7 @@
       </td>
     </tr>
     <tr>
-      <td style="vertical-align: top;"><br>
+      <td style="vertical-align: top;">Import a Floater Corp, price it and create manual trade<br>
       </td>
       <td style="vertical-align: top;">Import From BBG, Price in PXE, Trade in TPRM<br>
       </td>
@@ -285,7 +291,7 @@
       </td>
     </tr>    
    <tr>
-      <td style="vertical-align: top;"><br>
+      <td style="vertical-align: top;">Import a Index-Linked Treasury, price it and create manual trade<br>
       </td>
       <td style="vertical-align: top;">Import From BBG, Price in PXE, Trade in TPRM<br>
       </td>
@@ -377,7 +383,7 @@
       </td>
     </tr>    
    <tr>
-      <td style="vertical-align: top;"><br>
+      <td style="vertical-align: top;">Import a Zero-Coupon Corp Treasury, price it and create manual trade<br>
       </td>
       <td style="vertical-align: top;">Import From BBG, Price in PXE, Trade in TPRM<br>
       </td>
@@ -469,7 +475,7 @@
       </td>
     </tr>    
     <tr>
-      <td style="vertical-align: top;"><br>
+      <td style="vertical-align: top;">Import a Zero-Coupon Treasury, price it and create manual trade<br>
       </td>
       <td style="vertical-align: top;">Import From BBG, Price in PXE, Trade in TPRM<br>
       </td>
@@ -561,7 +567,7 @@
       </td>
     </tr>    
    <tr>
-      <td style="vertical-align: top;"><br>
+      <td style="vertical-align: top;">Import a Sinkable Treasury, price it and create manual trade<br>
       </td>
       <td style="vertical-align: top;">Import From BBG, Price in PXE, Trade in TPRM<br>
       </td>
@@ -599,9 +605,9 @@
       </td>
       <td style="vertical-align: top;">0<br>
       </td>
-      <td style="vertical-align: top;">136.72613430011552<br>
+      <td style="vertical-align: top;">136.7261343<br>
       </td>
-      <td style="vertical-align: top;">136.72613430011552<br>
+      <td style="vertical-align: top;">136.7261343<br>
       </td>
       <td style="vertical-align: top;">Valid<br>
       </td>
@@ -653,7 +659,7 @@
       </td>
     </tr>    
    <tr>
-      <td style="vertical-align: top;"><br>
+      <td style="vertical-align: top;">Import a Putable Treasury, price it and create manual trade<br>
       </td>
       <td style="vertical-align: top;">Import From BBG, Price in PXE, Trade in TPRM<br>
       </td>
@@ -745,7 +751,7 @@
       </td>
     </tr>    
    <tr>
-      <td style="vertical-align: top;"><br>
+      <td style="vertical-align: top;">Import a fixed coupon Agency, price it and create manual trade<br>
       </td>
       <td style="vertical-align: top;">Import From BBG, Price in PXE, Trade in TPRM<br>
       </td>
@@ -839,7 +845,7 @@
     </tr>    
    <tr>
    <tr>
-      <td style="vertical-align: top;"><br>
+      <td style="vertical-align: top;">Import a Callable Agency, price it and create manual trade<br>
       </td>
       <td style="vertical-align: top;">Import From BBG, Price in PXE, Trade in TPRM<br>
       </td>
@@ -933,7 +939,7 @@
     </tr>    
    <tr>
    <tr>
-      <td style="vertical-align: top;"><br>
+      <td style="vertical-align: top;">Import a Zero-Coupon Agency, price it and create manual trade<br>
       </td>
       <td style="vertical-align: top;">Import From BBG, Price in PXE, Trade in TPRM<br>
       </td>

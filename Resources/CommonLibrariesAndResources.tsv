@@ -1,12 +1,12 @@
 *Settings*							
-Resource	%{TESTSUITE_ROOT}${/}Resources${/}REFDATA_Common_Settings.tsv						
+Resource	%{TESTSUITE_ROOT}${/}Resources${/}Common_Variables.tsv						
 Resource	%{TESTSUITE_ROOT}${/}Resources${/}InstrumentUpdate_Global_Variables.tsv						
 Library	String						
 Library	Collections						
 Library	OperatingSystem						
 Library	Dialogs						
 Library	ITAS	1					
-Library	com.iontrading.iontesterrobotlib.TPRMRobotInterface						
+Library	FRC_E2E_Keywords						
 Resource	%{TESTSUITE_ROOT}${/}Resources${/}General_Purpose_Utility_Keywords.html						
 Resource	%{TESTSUITE_ROOT}${/}Resources${/}REFDATA_Database_Keywords_Utility.html						
 Resource	%{TESTSUITE_ROOT}${/}Resources${/}REFDATA_Middleware_User_Keywords.tsv						
@@ -14,13 +14,6 @@ Resource	%{TESTSUITE_ROOT}${/}Resources${/}Configure_Platform_Utility.tsv
 Resource	%{TESTSUITE_ROOT}${/}Resources${/}Configure_Scenario_Utility.tsv						
 Resource	%{TESTSUITE_ROOT}${/}Resources${/}InstrumentUpdate_Utility.tsv						
 Resource	%{TESTSUITE_ROOT}${/}Resources${/}SQL_UserKeywords_103.txt						
-Library	%{TESTSUITE_ROOT}${/}Resources${/}E2E_Utility.py						
-Library	%{TESTSUITE_ROOT}${/}Resources${/}E2E_PXE.py						
-Library	%{TESTSUITE_ROOT}${/}Resources${/}E2E_Refdata.py						
-Library	%{TESTSUITE_ROOT}${/}Resources${/}E2E_Tradeentry.py						
-Library	%{TESTSUITE_ROOT}${/}Resources${/}E2E_Tradeserver.py						
-Library	%{TESTSUITE_ROOT}${/}Resources${/}E2E_Position.py						
-Library	%{TESTSUITE_ROOT}${/}Resources${/}E2E_Risk.py						
 							
 *Variables*							
 ${TESTSUITE_ROOT}	C:\\E2E_Tests_Dev\\TestSuites						

@@ -1,0 +1,105 @@
+*Settings*							
+Resource	CommonSettingsResources.tsv						
+							
+*Keywords*							
+Suite Setup	Comment	Configure Refdata with BBG Dplayer as ExtIns source					
+	Set Timeout Values	${TIMEOUT_S}	${TIMEOUT_M}	${TIMEOUT_L}	${TIMEOUT_XL}		
+	Set Tradeserver Source Currency	${TRADESERVER SRC}	${TRADESERVER CURR}				
+	Set STP Source Currency	${STPSERVER SRC}	${STPSERVER CURR}				
+	Set PXE Source Currency	${COMMON PXE SRC}	${COMMON PXE CURR}				
+	Set Refdata Source Currency	${COMMON REFDATA SRC}	${COMMON REFDATA CURR}				
+	Set Position Source Currency	${POSITION SRC}	${POSITION CURR}				
+	Set Risk Source Currency	${RISK SRC}	${RISK CURR}				
+	Install and Start Dplayer As BBG						
+	Login to PXE	${COMMON PXE USER}	${COMMON PXE PWD}				
+	Set Suite Variable	@{list_instr_id}	@{EMPTY}				
+	${dict_having_extinstrid_wfinstrid}	Create Dictionary	${EMPTY}	${EMPTY}			
+	Set Suite Variable	${dict_having_extinstrid_wfinstrid}					
+	Perform VCMI Login	${ESPEED SRC}	${ESPEED USER}	${ESPEED PWD}			
+	Set Trader Status	${ESPEED SRC}	${ESPEED CURR}	${ESPEED USER}	On		
+	Remove Gateway Source In STP	${ESPEED SRC}					
+	Insert Gateway Source In STP	${ESPEED SRC}					
+	Configure Gateway Source In STP	${ESPEED SRC}	DefaultBookId	${BOOKID}			
+							
+Suite Teardown	Stop Platform Component	${COMMON DPLAYER BBGMDATA COMP NAME}					
+	Remove Instruments From PXE	@{list_instr_id}					
+	Logout From PXE	${COMMON PXE USER}					
+	Cleanup For All Imported Instruments	@{list_instr_id}					
+	Restart Platform Component	${COMMON REFDATA COMP NAME}					
+	Restart Platform Component	${TRADESERVER COMP NAME}					
+	Restart Platform Component	${ESPEED COMP NAME}					
+	Remove Gateway Source In STP	${ESPEED SRC}					
+	Restart Platform Component	${STPSERVER COMP NAME}					
+							
+Import From BBG, Price in PXE, Electronic Trade in TPRM	[Arguments]	${instr_type}	${coupon_type}	${value}	${value_type}	${trd_value}	${verb}
+	...	${trd_qty}	${stp_statusstr}	${ts_price}	${ts_yield}	${ts_discount}	${ts_discountmargin}
+	...	${ts_trdstatusstr}	${ts_calcstatusstr}	${pos_nettradingpos}	${pos_postypestr}	${pos_statusstr}	${risk_pospnl}
+	...	${risk_tradingpnl}	${risk_netpnl}	${risk_statusstr}			
+	${external_instr_id}=	Select Correct Instrument To Import	${instr_type}	${coupon_type}			
+	${instr_already_imported}=	Check If Instrument Already Imported	${external_instr_id}				
+	${instr_id}=	Run Keyword If	'${instr_already_imported}' == 'False'	Import Instrument and Feed to PXE	${external_instr_id}		
+	...	ELSE	Get Refdata Instrument Id For Imported Instrument	${external_instr_id}			
+	Append To List	${list_instr_id}	${instr_id}				
+	Price instrument in PXE	${instr_id}	${value}	${value_type}			
+	${trade_id}=	Create Trade From Gateway	${instr_id}	${trd_value}	${trd_qty}	${verb}	
+	Verify Tradeserver Fields	${trade_id}	Price	${ts_price}	Yield	${ts_yield}	Discount
+	...	${ts_discount}	DiscountMargin	${ts_discountmargin}	TradeStatusStr	${ts_trdstatusstr}	CalcStatusStr
+	...	${ts_calcstatusstr}					
+	Verify Position Fields	${BOOKID}	${instr_id}	${trade_id}	NetTradingPos	${pos_nettradingpos}	PositionTypeStr
+	...	${pos_postypestr}	StatusStr	${pos_statusstr}			
+	Verify Risk Fields	${BOOKID}	${instr_id}	${trade_id}	PosPnl	${risk_pospnl}	TradingPnl
+	...	${risk_tradingpnl}	NetPnl	${risk_netpnl}	StatusStr	${risk_statusstr}	
+							
+Import Instrument and Feed to PXE	[Arguments]	${ext_instr_id_to_import}					
+	Import Instrument From External Source as BBG	${ext_instr_id_to_import}					
+	${wf_instr_id}=	Get Instrument Id of imported instrument	${COMMON DPLAYER BBGMDATA SRC}	${ext_instr_id_to_import}			
+	Feed Refdata Instrument To PXE	${wf_instr_id}					
+	Set To Dictionary	${dict_having_extinstrid_wfinstrid}	${ext_instr_id_to_import}	${wf_instr_id}			
+	[Return]	${wf_instr_id}					
+							
+Check If Instrument Already Imported	[Arguments]	${ext_instr_id}					
+	${list_all_ext_instrs_imported}=	Get Dictionary Keys	${dict_having_extinstrid_wfinstrid}				
+	${status}	Run Keyword And Return Status	List Should Contain Value	${list_all_ext_instrs_imported}	${ext_instr_id}		
+	[Return]	${status}					
+							
+Get Refdata Instrument Id For Imported Instrument	[Arguments]	${ext_instr_id}					
+	${wf_instr_id}=	Get From Dictionary	${dict_having_extinstrid_wfinstrid}	${ext_instr_id}			
+	[Return]	${wf_instr_id}					
+							
+Install and Start Dplayer As BBG	Install And Set Configurations for DPlayer Component As BBG						
+	DPlayer	Set Component Setting	${COMMON DPLAYER BBGMDATA COMP NAME}	INPUT_FILE_NAME	${COMMON DPLAYER FILES DIR}${/}${DPLAYER BBG UPDATE INPUT FILE}		
+	Start Platform Component	${COMMON DPLAYER BBGMDATA COMP NAME}					
+	Connect Components	${COMMON DPLAYER BBGMDATA COMP NAME}	${COMMON ROUTER COMP NAME}				
+							
+Cleanup For All Imported Instruments	[Arguments]	@{list_instr_id}					
+	: FOR	${instr}	IN	@{list_instr_id}			
+		Delete All Trades For Instrument	${instr}				
+		Delete Instrument From Database	${instr}				
+							
+Delete All Trades For Instrument	[Arguments]	${instr}					
+	SQL Connect To DBMS	${DB TYPE}	${DB HOST}	${DB PORT}	${DB NAME}	${DB USER}	${DB PWD}
+	SQL Delete Record	FW_trade	sec_id='${instr}'				
+	SQL Delete Record	FW_trade_archive	sec_id='${instr}'				
+	SQL Execute Procedure	commit					
+	SQL Disconnect from DBMS						
+							
+Delete Instrument From Database	[Arguments]	${instr}					
+	@{instr_table_list}=	Set Variable	FW_bond_desc	FW_corp_desc	FW_agency_desc	FW_futures_desc	
+	SQL Connect to DBMS	${DB TYPE}	${DB HOST}	${DB PORT}	${DB NAME}	${DB USER}	${DB PWD}
+	: FOR	${table}	IN	@{instr_table_list}			
+		SQL Delete Record	${table}	sec_id='${instr}'			
+	SQL Execute Procedure	commit					
+	SQL Disconnect from DBMS						
+							
+Create Trade From Gateway	[Arguments]	${instr_id}	${value}	${qty}	${verbstr}		
+	Set Filter Trade Expr In STP	${ESPEED SRC}	"IF(VerbStr=""${verbStr}"",""Y"",""N"")"				
+	${opp_verbstr}=	Set Variable If	'${verbstr}' == 'Buy'	Sell	Buy		
+	${order_id}=	Add Order	${ESPEED SRC}	${ESPEED USER}	${instr_id}	${verbstr}	${value}
+	...	${qty}	${qty}	LIMIT	FAS	0	0
+	...	${EMPTY}	${EMPTY}	0	${EMPTY}	0	
+	${opp_order_id}=	Add Order	${ESPEED SRC}	${ESPEED USER}	${instr_id}	${opp_verbstr}	${value}
+	...	${qty}	${qty}	LIMIT	FAS	0	0
+	...	${EMPTY}	${EMPTY}	0	${EMPTY}	0	
+	builtin.sleep	10s					
+	${wf_trade_id}=	Get TS trade id from STP processed trades	${ESPEED SRC}	${order_id}			
+	[Return]	${wf_trade_id}					

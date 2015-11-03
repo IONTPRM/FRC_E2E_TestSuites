@@ -337,18 +337,7 @@ Get Record Id For SalesCredit Record	[Arguments]	@{FieldNameValuesList}
 Add Maintenance Table Record	[Arguments]	${RecordType}	@{FieldNameValuesList}				
 	${RecordId}	Get RecordId For Maintenance Record	${RecordType}	@{FieldNameValuesList}			
 	Run Keyword And Ignore Error	DeleteMaintenanceRecord	${RecordType}	${RecordId}			
-	${status}	${message}	Run Keyword And Ignore Error	Run Keyword If	'${RecordType}'=='RATESOURCE'	Add Maintenance Table Record For RateSource	@{FieldNameValuesList}
-	...	ELSE IF	'${RecordType}'=='RATESOURCEPAGE'	Add Maintenance Table Record For RateSourcePage	@{FieldNameValuesList}		
-	...	ELSE IF	'${RecordType}'=='CALENDAR'	Add Maintenance Table Record For Calendar	@{FieldNameValuesList}		
-	...	ELSE IF	'${RecordType}'=='BOOKGROUP'	Add Maintenance Table Record For BookGroup	@{FieldNameValuesList}		
-	...	ELSE IF	'${RecordType}'=='CODETYPE'	Add Maintenance Table Record For CodeType	@{FieldNameValuesList}		
-	...	ELSE IF	'${RecordType}'=='COUNTERPARTYGROUP'	Add Maintenance Table Record For CounterpartyGroup	@{FieldNameValuesList}		
-	...	ELSE IF	'${RecordType}'=='COUNTRY'	Add Maintenance Table Record For Country	@{FieldNameValuesList}		
-	...	ELSE IF	'${RecordType}'=='INSTRUMENTGROUP'	Add Maintenance Table Record For InstrumentGroup	@{FieldNameValuesList}		
-	...	ELSE IF	'${RecordType}'=='INSTRUMENTCUSTOMFIELD'	Add Maintenance Table Record For InstrumentCustomField	@{FieldNameValuesList}		
-	...	ELSE IF	'${RecordType}'=='LOCATION'	Add Maintenance Table Record For Location	@{FieldNameValuesList}		
-	...	ELSE IF	'${RecordType}'=='INDEXHISTORY'	Add Maintenance Table Record For Index	@{FieldNameValuesList}		
-	...	ELSE	Refdata Add MaintenanceRecord Using RecordType	${RecordType}	@{FieldNameValuesList}		
+	${status}	${message}	Run Keyword And Ignore Error	Run Keyword If	'${RecordType}'=='RATESOURCE'	Add Maintenance Table Record For RateSource	@{FieldNameValuesList}	ELSE IF	'${RecordType}'=='RATESOURCEPAGE'	Add Maintenance Table Record For RateSourcePage	@{FieldNameValuesList}	ELSE IF	'${RecordType}'=='CALENDAR'	Add Maintenance Table Record For Calendar	@{FieldNameValuesList}	ELSE IF	'${RecordType}'=='BOOKGROUP'	Add Maintenance Table Record For BookGroup	@{FieldNameValuesList}	ELSE IF	'${RecordType}'=='CODETYPE'	Add Maintenance Table Record For CodeType	@{FieldNameValuesList}	ELSE IF	'${RecordType}'=='COUNTERPARTYGROUP'	Add Maintenance Table Record For CounterpartyGroup	@{FieldNameValuesList}	ELSE IF	'${RecordType}'=='COUNTRY'	Add Maintenance Table Record For Country	@{FieldNameValuesList}	ELSE IF	'${RecordType}'=='INSTRUMENTGROUP'	Add Maintenance Table Record For InstrumentGroup	@{FieldNameValuesList}	ELSE IF	'${RecordType}'=='INSTRUMENTCUSTOMFIELD'	Add Maintenance Table Record For InstrumentCustomField	@{FieldNameValuesList}	ELSE IF	'${RecordType}'=='LOCATION'	Add Maintenance Table Record For Location	@{FieldNameValuesList}	ELSE IF	'${RecordType}'=='INDEXHISTORY'	Add Maintenance Table Record For Index	@{FieldNameValuesList}	ELSE	Refdata Add MaintenanceRecord Using RecordType	${RecordType}	@{FieldNameValuesList}
 	${Result}	Set Variable	Ok				
 	Run Keyword If	'${Result}'!='Ok'	Should Contain	${message}	${Result}		
 	${RecordId}	Run Keyword If	'${Result}'=='Ok'	Get RecordId For Maintenance Record	${RecordType}	@{FieldNameValuesList}	
@@ -380,10 +369,7 @@ Delete Maintenance Record	[Arguments]	${RecordType}	${RecordId}	${Result}=Ok
 	@{parametersForHoliday}=	Run Keyword If	('${RecordType}'=='CALENDAR' or '${RecordType}'=='HOLIDAY') and '${RecordId}'!='${EMPTY}'	Split String	${RecordId}	_	
 	@{parametersForIndex}=	Run Keyword If	'${RecordType}'=='INDEXHISTORY' and '${RecordId}'!='${EMPTY}'	Split String	${RecordId}	_	
 	${noOfParameters}=	Run Keyword If	'${RecordType}'=='SWAPTYPE' and '${RecordId}'!='${EMPTY}'	Get Length	${parametersForSwapType}	ELSE IF	('${RecordType}'=='CALENDAR' or '${RecordType}'=='HOLIDAY') and '${RecordId}'!='${EMPTY}'	Get Length	${parametersForHoliday}
-	${status}	${response}=	Run Keyword And Ignore Error	Run Keyword If	'${RecordType}'=='SWAPTYPE' and '${RecordId}'!='${EMPTY}' and '${noOfParameters}'=='5'	refdataDeleteSwapTypeRecord	@{parametersForSwapType}[0]	@{parametersForSwapType}[1]	@{parametersForSwapType}[2]	@{parametersForSwapType}[3]	@{parametersForSwapType}[4]
-	...	ELSE IF	('${RecordType}'=='CALENDAR' or '${RecordType}'=='HOLIDAY') and '${RecordId}'!='${EMPTY}' and '${noOfParameters}'=='2'	refdataRemoveHoliday	@{parametersForHoliday}[0]	@{parametersForHoliday}[1]	
-	...	ELSE IF	'${RecordType}'=='INDEXHISTORY' and '${RecordId}'!='${EMPTY}'	refdataRemoveIndexRecord	@{parametersForIndex}[0]	@{parametersForIndex}[1]	
-	...	ELSE	refdataDeleteMaintenanceRecordUsingRecordType	${RecordType}	${RecordId}		
+	${status}	${response}=	Run Keyword And Ignore Error	Run Keyword If	'${RecordType}'=='SWAPTYPE' and '${RecordId}'!='${EMPTY}' and '${noOfParameters}'=='5'	refdataDeleteSwapTypeRecord	@{parametersForSwapType}[0]	@{parametersForSwapType}[1]	@{parametersForSwapType}[2]	@{parametersForSwapType}[3]	@{parametersForSwapType}[4]	ELSE IF	('${RecordType}'=='CALENDAR' or '${RecordType}'=='HOLIDAY') and '${RecordId}'!='${EMPTY}' and '${noOfParameters}'=='2'	refdataRemoveHoliday	@{parametersForHoliday}[0]	@{parametersForHoliday}[1]	ELSE IF	'${RecordType}'=='INDEXHISTORY' and '${RecordId}'!='${EMPTY}'	refdataRemoveIndexRecord	@{parametersForIndex}[0]	@{parametersForIndex}[1]	ELSE	refdataDeleteMaintenanceRecordUsingRecordType	${RecordType}	${RecordId}
 	Should Contain	${response}	${Result}				
 							
 Add Maintenance Table Record For BookGroup	[Arguments]	@{FieldNameValuesList}					

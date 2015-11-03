@@ -51,6 +51,7 @@ ${TRADESERVER SRC}	TRADESERVER
 ${TRADESERVER CURR}	EUR						
 ${POSITION SRC}	POSITION						
 ${POSITION CURR}	EUR						
+${POSITION COMP NAME}	PositionServer						
 ${RISK SRC}	RISK						
 ${RISK CURR}	EUR						
 ${DB TYPE}	ORACLE						
@@ -61,5 +62,19 @@ ${DB USER}	reftrade
 ${DB PWD}	reftrade						
 ${TRADEENTRY COMP NAME}	TradeEntry						
 ${TRADESERVER COMP NAME}	TradeServer						
-${POSITION COMP NAME}	PositionServer						
 ${RISK COMP NAME}	RiskServer						
+${STPSERVER SRC}	STPSERVER						
+${STPSERVER CURR}	EUR						
+${ESPEED SRC}	ESPEED						
+${ESPEED CURR}	EUR						
+${ESPEED USER}	demo1						
+${ESPEED PWD}	demo1						
+${TIMEOUT_S}	5s						
+${TIMEOUT_M}	10s						
+${TIMEOUT_L}	20s						
+${TIMEOUT_XL}	60s						
+${STPSERVER COMP NAME}	STPServer						
+${ESPEED COMP NAME}	eSpeed_Mock						
+${SALESREPID}	SALES1						
+${CPKEY}	CP1000						
+${CPKEY1}	CP1001						
