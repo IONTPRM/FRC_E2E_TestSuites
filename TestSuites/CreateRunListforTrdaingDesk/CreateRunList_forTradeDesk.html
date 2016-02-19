@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>ImportFromBBG_PriceAndTrade</title>
+<link rel="stylesheet" type="text/css" href="../../Resources/TPRMAcceptanceTest.css">
+</head>
+<body style="body">
+<p class="documentation"
+	style="font-family: Calibri">
+In this suite we are verifying following workflow -<br>
+1) Instrument is imported from BBG (correctly imported in Refdata and fed to PXE)<br>2) Instrument Group is created using instruments imported from BBG<br>3) Runlist Manager is configured to subriscribe instrument from instrument group. <br>
+4) Priced in PXE (priced as per the instrument's price type with 'Manual Price' model)<br>
+5) Traded manually in TPRM (got analytics from PXE, Risk got prices from PXE, PnL calculated correctly)
+<br>6)  Verify that psotion fields are subscribed correclty by runList chain (RUN_AXE).</p>
+<br>
+	<table class="settings-table"
+		style="text-align: left; width: 808px; height: 112px" border="1"
+		cellpadding="2" cellspacing="2">
+		<tbody>
+			<tr>
+				<td style="vertical-align: top; width: 206px;">Settings<br>
+				</td>
+				<td style="vertical-align: top; width: 305px;">Value<br>
+				</td>
+				<td style="vertical-align: top; width: 215px;">Value<br>
+				</td>
+			</tr>
+			<tr>
+				<td style="vertical-align: top; width: 206px;">Suite Setup<br>
+				</td>
+				<td style="vertical-align: top; width: 305px;">Suite Setup<br>
+				</td>
+				<td style="vertical-align: top; width: 215px;"><br></td>
+			</tr>
+			<tr>
+				<td style="vertical-align: top; width: 206px;">Suite Teardown<br>
+				</td>
+				<td style="vertical-align: top; width: 305px;">Suite Teardown<br>
+				</td>
+				<td style="vertical-align: top; width: 215px;"><br></td>
+			</tr>
+			<tr>
+				<td style="vertical-align: top; width: 206px;">Resource<br>
+				</td>
+				<td style="vertical-align: top; width: 305px;">%{TESTSUITE_ROOT}${/}Resources${/}CommonLibrariesAndResources.tsv<br>
+				</td>
+				<td style="vertical-align: top; width: 215px;"><br></td>
+			</tr>
+			<tr>
+				<td style="vertical-align: top; width: 206px;">Resource</td>
+				<td style="vertical-align: top; width: 305px;">SuiteKeywords.tsv<br>
+				</td>
+				<td style="vertical-align: top; width: 215px;"><br></td>
+			</tr>
+
+		</tbody>
+	</table>
+<br>
+	<table class="test-case-table"
+		style="text-align: left; width: 1110px; height: 100px;" border="1"
+		cellpadding="2" cellspacing="2">
+
+		<tbody>
+			<tr>
+				<td style="vertical-align: top;">Test Case<br>
+				</td>
+				<td style="vertical-align: top;">Action<br>
+				</td>
+				<td class="input" style="vertical-align: top;">Qty<br>
+				</td>
+				<td class="input" style="vertical-align: top;">Value<br>
+				</td>
+				<td class="input" style="vertical-align: top;">Verb<br>
+				</td>
+				<td class="output" style="vertical-align: top;">TradeStatusStr<br>
+				</td>
+				<td class="output" style="vertical-align: top;">TS CalcStatus<br>
+				</td>
+				<td class="output" style="vertical-align: top;">Net Positiont<br>
+				</td>
+				<td class="output" style="vertical-align: top;">positionType<br>
+				</td>
+				<td class="output" style="vertical-align: top;">PositionStatus<br>
+				</td>
+				<td class="output" style="vertical-align: top;">RLM NetPosition<br>
+				</td>
+				<td class="output" style="vertical-align: top;">RLM Status<br>
+				</td>
+				<td class="output" style="vertical-align: top;">RLM SubscriptionStatus<br>
+				</td>
+				<td class="output" style="vertical-align: top;">RLM AskCap<br>
+				</td>
+				<td class="output" style="vertical-align: top;">RLM BidCap<br>
+				</td>
+				<td class="output" style="vertical-align: top;">RLM AskOverrridePosition<br>
+				</td>
+				<td class="output" style="vertical-align: top;">RLM BidOverridePosition<br>
+				</td>
+				</tr>
+			<tr>
+				<td style="vertical-align: top;">Verify a new run list is able to get Position from position server-(RUN_AXE)<br>
+				</td>
+				<td style="vertical-align: top;">Perform manual trade and check positions and prices in Tradeserver and RLM chain<br>
+				</td>
+				<td style="vertical-align: top;">Instr1:10,Instr2:10<br>
+				</td>
+				<td style="vertical-align: top;">Instr1:99.5,Instr2:101<br>
+				</td>
+				<td style="vertical-align: top;">1<br>
+				</td>
+				<td style="vertical-align: top;">Open<br>
+				</td>
+				<td style="vertical-align: top;">Ok<br>
+				</td>
+				<td style="vertical-align: top;">Instr1:10,Instr2:10<br>
+				</td>
+				<td style="vertical-align: top;">Open<br>
+				</td>
+				<td style="vertical-align: top;">Valid
+				</td>
+				<td style="vertical-align: top;">Instr1:10,Instr2:10<br>
+				</td>
+				<td style="vertical-align: top;">Off<br>
+				</td>
+				<td style="vertical-align: top;">Subscription On<br>
+				</td>
+				<td style="vertical-align: top;">NaN<br>
+				</td>
+				<td style="vertical-align: top;">NaN<br>
+				</td>
+				<td style="vertical-align: top;">0.00<br>
+				</td>
+				<td style="vertical-align: top;">0.00<br>
+				</td>
+			</tr>
+
+		</tbody>
+	</table>
+
+	<br>
+
+</body>
+</html>

@@ -1,0 +1,387 @@
+*Settings*							
+Resource	%{TESTSUITE_ROOT}/Resources/CommonLibrariesAndResources.tsv						
+							
+*Variables*							
+@{column_list}	TestBidPrice	TBPc	String_Right_2	PRICE	REAL	Buy	:
+...	TestAskPrice	TAPc	String_Right_2	PRICE	REAL	Sell	:
+...	TestAskSize	TASz	String_Right_2	Size	REAL	Sell	:
+...	TestBidSize	TBSz	String_Right_2	Size	REAL	Buy	:
+...	TestSecurity	TBond	String_Right_2	UNDEF	STR	Undef	# ColumnName|Alias|PriceType|ValueType|verb:
+@{column_source_list}	TestBidPrice	PXE	BidPrice	:	TestAskPrice	PXE	AskPrice
+...	:	TestAskSize	RUN_POSITION	NetTradingPos	:	TestBidSize	RUN_POSITION
+...	NetTradingPos	:	TestSecurity	RUN_LIST_MANAGER	Isin		
+@{template_column_list}	TestBidPrice	String_Right_2	False	1.0	:	TestBidSize	String_Right_2
+...	False	1.0	:	TestAskPrice	String_Right_2	False	1.0
+...	:	TestAskSize	String_Right_2	False	1.0	:	TestSecurity
+...	String_Right_2	False	1.0				
+@{recipient_list}	Naveen	n.tomar@iontrading.com		Test_uuid_01	:	Abhishek	a.chawla@iontrading.com
+...		Test_uuid_02					
+${recipient_group}	TestGrp						
+${run_list_name}	TestRunList						
+${template_name}	TestRunTemplate1						
+@{instrument_type_list}	T Note	Corp	Agency	Govt			
+@{coupon_type_list}	Fixed	Floater	Fixed	Index Linked			
+${INSTR_GROUP_IN_RLM}	TESTRUNLIST1	# this grp shoul be configured in setting cm_instrrecord of RLM					
+${SENDER_NAME}	Ankit						
+${SENDER_ADDRESS}	ankit.jain@iontrading.com						
+							
+*Keywords*							
+Suite Setup	Comment	Configure Refdata with BBG Dplayer as ExtIns source					
+	Set Timeout Values	${TIMEOUT_S}	${TIMEOUT_M}	${TIMEOUT_L}	${TIMEOUT_XL}		
+	Set Tradeserver Source Currency	${TRADESERVER SRC}	${TRADESERVER CURR}				
+	Set Tradeentry Source Currency	${TRADEENTRY SRC}	${TRADEENTRY CURR}				
+	Set PXE Source Currency	${COMMON PXE SRC}	${COMMON PXE CURR}				
+	Set Refdata Source Currency	${COMMON REFDATA SRC}	${COMMON REFDATA CURR}				
+	Set Position Source Currency	${POSITION SRC}	${POSITION CURR}				
+	Set Risk Source Currency	${RISK SRC}	${RISK CURR}				
+	Set RLM Source Currency	${RUNLIST_MANAGER_SRC}	${RUNLIST_MANAGER_CURR}				
+	${dict_having_extinstrid_wfinstrid}	Create Dictionary	${EMPTY}=${EMPTY}				
+	Install and Start Dplayer As BBG						
+	log	Start Dplayer	level=WARN				
+	Login to PXE	${COMMON PXE USER}	${COMMON PXE PWD}				
+	Set Suite Variable	@{list_instr_id}	@{EMPTY}				
+	Set Suite Variable	${dict_having_extinstrid_wfinstrid}					
+	get Instruments from instrument group	${INSTR_GROUP_IN_RLM}					
+	Comment	builtin.log	${dict} dictionary values	level=WARN			
+	Create Column for runlist using list	${column_list}					
+	Create Column Source for runlist using list	${column_source_list}					
+	createTemplateForRLM	${template_name}					
+	Create Template Column for RunList Manager using list	${template_name}	${template_column_list}				
+	createRecipientGrpFromRLM	${recipient_group}					
+	Create RunList for RunList Manager using list	RUN					
+	Create Recipient for RunList	${recipient_list}					
+	Add reciepient in Recipient group	${recipient_list}					
+	Comment	builtin.sleep	180s				
+	Comment	Install and Start Dplayer As BBG					
+	Comment	log	Start Dplayer	level=WARN			
+	Comment	Login to PXE	${COMMON PXE USER}	${COMMON PXE PWD}			
+	Comment	Set Suite Variable	@{list_instr_id}	@{EMPTY}			
+							
+Suite Teardown	Stop Platform Component	${COMMON DPLAYER BBGMDATA COMP NAME}					
+	Remove Instruments From PXE	@{list_instr_id}					
+	Logout From PXE	${COMMON PXE USER}					
+	Cleanup For All Imported Instruments	@{list_instr_id}					
+	Restart Platform Component	${COMMON REFDATA COMP NAME}					
+	Restart Platform Component	${TRADESERVER COMP NAME}					
+	Verify component is running	${COMMON REFDATA SRC}	CM_STATUS	${COMMON REFDATA CURR}	GSTATUS		
+	Verify component is running	${TRADESERVER SRC}	CM_STATUS	${TRADESERVER CURR}	GSTATUS		
+	deleteRecipientGrpFromRLM	${recipient_group}					
+	Delete Recipient for RunList	${recipient_list}					
+	Delete RunList from RunList Manager						
+	delete template for runlist	${template_name}					
+	delete column Source from runlist	${column_source_list}					
+	Delete Column from Runlist	${column_list}					
+	Restart Platform Component	${RUNLIST_MANAGER_COMP}					
+	Verify component is running	${RUNLIST_MANAGER_SRC}	CM_STATUS	${RUNLIST_MANAGER_CURR}	GSTATUS		
+	deleteInstrumentGrp	${INSTR_GROUP_IN_RLM}					
+							
+Import From BBG, Price in PXE, Manual Trade in TPRM	[Arguments]	${instr_type}	${coupon_type}	${value}	${value_type}	${trd_value}	${verb}
+	...	${trd_qty}	${ts_price}	${ts_yield}	${ts_discount}	${ts_discountmargin}	${ts_trdstatusstr}
+	...	${ts_calcstatusstr}	${pos_nettradingpos}	${pos_postypestr}	${pos_statusstr}	${risk_pospnl}	${risk_tradingpnl}
+	...	${risk_netpnl}	${risk_statusstr}				
+	${external_instr_id}=	Select Correct Instrument To Import	${instr_type}	${coupon_type}			
+	${instr_already_imported}=	Check If Instrument Already Imported	${external_instr_id}				
+	${instr_id}=	Run Keyword If	'${instr_already_imported}' == 'False'	Import Instrument and Feed to PXE	${external_instr_id}		
+	...	ELSE	Get Refdata Instrument Id For Imported Instrument	${external_instr_id}			
+	Append To List	${list_instr_id}	${instr_id}				
+	Price instrument in PXE	${instr_id}	${value}	${value_type}			
+	${trade_id}=	Create Manual Trade	${COMMON MKVUSER}	${instr_id}	${BOOKID}	${trd_value}	${value_type}
+	...	${verb}	${trd_qty}				
+	Verify Tradeserver Fields	${trade_id}	Price	${ts_price}	Yield	${ts_yield}	Discount
+	...	${ts_discount}	DiscountMargin	${ts_discountmargin}	TradeStatusStr	${ts_trdstatusstr}	CalcStatusStr
+	...	${ts_calcstatusstr}					
+	Verify Position Fields	${BOOKID}	${instr_id}	${trade_id}	NetTradingPos	${pos_nettradingpos}	PositionTypeStr
+	...	${pos_postypestr}	StatusStr	${pos_statusstr}			
+	Verify Risk Fields	${BOOKID}	${instr_id}	${trade_id}	PosPnl	${risk_pospnl}	TradingPnl
+	...	${risk_tradingpnl}	NetPnl	${risk_netpnl}	StatusStr	${risk_statusstr}	
+							
+Import Instrument and Feed to PXE	[Arguments]	${ext_instr_id_to_import}					
+	Import Instrument From External Source as BBG	${ext_instr_id_to_import}					
+	${wf_instr_id}=	Get Instrument Id of imported instrument	${COMMON DPLAYER BBGMDATA SRC}	${ext_instr_id_to_import}			
+	Feed Refdata Instrument To PXE	${wf_instr_id}					
+	Set To Dictionary	${dict_having_extinstrid_wfinstrid}	${ext_instr_id_to_import}	${wf_instr_id}			
+	[Return]	${wf_instr_id}					
+							
+Check If Instrument Already Imported	[Arguments]	${ext_instr_id}					
+	${list_all_ext_instrs_imported}=	Get Dictionary Keys	${dict_having_extinstrid_wfinstrid}				
+	${status}	Run Keyword And Return Status	List Should Contain Value	${list_all_ext_instrs_imported}	${ext_instr_id}		
+	[Return]	${status}					
+							
+Get Refdata Instrument Id For Imported Instrument	[Arguments]	${ext_instr_id}					
+	${wf_instr_id}=	Get From Dictionary	${dict_having_extinstrid_wfinstrid}	${ext_instr_id}			
+	[Return]	${wf_instr_id}					
+							
+Install and Start Dplayer As BBG	Install And Set Configurations for DPlayer Component As BBG						
+	DPlayer	Set Component Setting	${COMMON DPLAYER BBGMDATA COMP NAME}	INPUT_FILE_NAME	${COMMON DPLAYER FILES DIR}${/}${DPLAYER BBG UPDATE INPUT FILE}		
+	Start Platform Component	${COMMON DPLAYER BBGMDATA COMP NAME}					
+	Connect Components	${COMMON DPLAYER BBGMDATA COMP NAME}	${COMMON ROUTER COMP NAME}				
+							
+Cleanup For All Imported Instruments	[Arguments]	@{list_instr_id}					
+	: FOR	${instr}	IN	@{list_instr_id}			
+		Delete All Trades For Instrument	${instr}				
+		Delete Instrument From Database	${instr}				
+							
+Delete All Trades For Instrument	[Arguments]	${instr}					
+	SQL Connect To DBMS	${DB TYPE}	${DB HOST}	${DB PORT}	${DB NAME}	${DB USER}	${DB PWD}
+	SQL Delete Record	FW_trade	sec_id='${instr}'				
+	SQL Delete Record	FW_trade_archive	sec_id='${instr}'				
+	SQL Execute Procedure	commit					
+	SQL Disconnect from DBMS						
+							
+Delete Instrument From Database	[Arguments]	${instr}					
+	@{instr_table_list}=	Set Variable	FW_bond_desc	FW_corp_desc	FW_agency_desc	FW_futures_desc	
+	SQL Connect to DBMS	${DB TYPE}	${DB HOST}	${DB PORT}	${DB NAME}	${DB USER}	${DB PWD}
+	: FOR	${table}	IN	@{instr_table_list}			
+		SQL Delete Record	${table}	sec_id='${instr}'			
+	SQL Execute Procedure	commit					
+	SQL Disconnect from DBMS						
+							
+Delete column source for Runlist manager	[Arguments]	${columnSourceId}					
+	Function Define	RUN_LIST_MANAGER	ColumnSourceDelete	Id	${columnSourceId}		
+	Function Set Timeout	10s					
+	Function Verify like Result	OK					
+	Function Call						
+							
+Convert list To String	[Arguments]	${list_to convert}					
+	${list_content_str}	set variable	${EMPTY}				
+	${length_of_list}=	Get Length	${list_to convert}				
+	${i}=	Set Variable	0				
+	${list_content_str}=	set variable	@{list_to convert}[0]				
+	: FOR	${i}	IN RANGE	1	${length_of_list}		
+		${list_content_str}=	catenate	SEPARATOR=,	${list_content_str}	@{list_to convert}[${i}]	
+	${list_content_str}=	replace string	${list_content_str}	,:,	:		
+	[Return]	${list_content_str}					
+							
+Create Column for runlist using list	[Arguments]	${column_var_list}					
+	${column_var_list_str}	Convert list To String	${column_var_list}				
+	@{variable_list_str}	split string	${column_var_list_str}	:			
+	${list_content_str}	set variable	${EMPTY}				
+	${length_of_list}=	Get Length	${variable_list_str}				
+	Comment	Log	${length_of_list} length	level=WARN			
+	${i}=	Set Variable	0				
+	${other_param_list}	Run keyword if	${length_of_list} > 6	Get Slice From List	${variable_list_str}	6	
+	...	ELSE	Create list	${EMPTY}			
+	${length_of_param_list}=	Get Length	${other_param_list}				
+	Comment	Log	${length_of_param_list}=	level=WARN			
+	: FOR	${i}	IN RANGE	0	${length_of_list}		
+		${list_content_str}=	set variable	@{variable_list_str}[${i}]			
+		@{list_variables}	split string	${list_content_str}	,		
+		Run keyword if	${length_of_param_list} == 1	createColumnForRLM	@{list_variables}[0]	Alias	@{list_variables}[1]
+		...	DefaultColumnFormatId	@{list_variables}[2]	FieldType	@{list_variables}[3]	FieldValueType
+		...	@{list_variables}[4]	Verb	@{list_variables}[5]		
+		...	ELSE	createColumnForRLM	@{list_variables}[0]	Alias	@{list_variables}[1]
+		...	DefaultColumnFormatId	@{list_variables}[2]	FieldType	@{list_variables}[3]	FieldValueType
+		...	@{list_variables}[4]	Verb	@{list_variables}[5]	${other_param_list}	
+		Comment	Log	${list_variables}	level=WARN		
+							
+Create Column Source for runlist using list	[Arguments]	${column_source_var_list}					
+	${column_source_var_list_str}	Convert list To String	${column_source_var_list}				
+	@{variable_list_str}	split string	${column_source_var_list_str}	:			
+	${list_content_str}	set variable	${EMPTY}				
+	${length_of_list}=	Get Length	${variable_list_str}				
+	${i}=	Set Variable	0				
+	${other_param_list}	Run keyword if	${length_of_list} > 3	Get Slice From List	${variable_list_str}	3	
+	...	ELSE	Create list	${EMPTY}			
+	${length_of_param_list}=	Get Length	${other_param_list}				
+	: FOR	${i}	IN RANGE	0	${length_of_list}		
+		${list_content_str}=	set variable	@{variable_list_str}[${i}]			
+		@{list_variables}	split string	${list_content_str}	,		
+		${column_source_id}	Get matching Record Id	${RUNLIST_MANAGER_CURR}.RUN_COLUMN.${RUNLIST_MANAGER_SRC}.COLUMN	@{list_variables}[0]		
+		Run keyword if	${length_of_param_list} == 1	createColumnSourceForRLM	@{list_variables}[0]	RunColumnId	${column_source_id}
+		...	RunSourceId	@{list_variables}[1]	SourceFields	@{list_variables}[2]	
+		...	ELSE	createColumnSourceForRLM	@{list_variables}[0]	RunColumnId	${column_source_id}
+		...	RunSourceId	@{list_variables}[1]	SourceFields	@{list_variables}[2]	${other_param_list}
+		Comment	Log	${list_variables}	level=WARN		
+							
+Get matching Record Id	[Arguments]	${chain_name}	${string_to_match}				
+	${value}	DPlayer	Get Filtered Record Field Values	${chain_name}	Id	"[string match ""${string_to_match}_*"" $Id]"	5000
+	Comment	log	${value}	level=WARN			
+	@{tuple_list}	split string	${value}				
+	${matching_id}	set variable	@{tuple_list}[1]				
+	[Return]	${matching_id}					
+							
+Create Template Column for RunList Manager using list	[Arguments]	${template_name}	${template_column_var_list}				
+	${template_id}	Get matching Record Id	ALL.RUN_TEMPLATE.RUN_LIST_MANAGER.RUN_TEMPLATE	${template_name}			
+	${template_column_var_list_str}	Convert list To String	${template_column_var_list}				
+	@{variable_list_str}	split string	${template_column_var_list_str}	:			
+	${list_content_str}	set variable	${EMPTY}				
+	${length_of_list}=	Get Length	${variable_list_str}				
+	${i}=	Set Variable	0				
+	${other_param_list}	Run keyword if	${length_of_list} > 4	Get Slice From List	${variable_list_str}	4	
+	...	ELSE	Create list	${EMPTY}			
+	${length_of_param_list}=	Get Length	${other_param_list}				
+	: FOR	${i}	IN RANGE	0	${length_of_list}		
+		${list_content_str}=	set variable	@{variable_list_str}[${i}]			
+		@{list_variables}	split string	${list_content_str}	,		
+		${column_source_id}	Get matching Record Id	${RUNLIST_MANAGER_CURR}.RUN_COLUMN_SOURCE.${RUNLIST_MANAGER_SRC}.COLUMN_SOURCE	@{list_variables}[0]		
+		Run keyword if	${length_of_param_list} == 1	createTemplateColumnForRLM	@{list_variables}[0]	TemplateId	${template_id}
+		...	ColumnSourceId	${column_source_id}	ColumnFormatId	@{list_variables}[1]	IsHidden
+		...	@{list_variables}[2]	Position	@{list_variables}[3]		
+		Comment	Log	${list_variables}	level=WARN		
+	COMMENT						
+	...	ELSE	createTemplateColumnForRLM	@{list_variables}[0]	TemplateId	${template_id}	ColumnSourceId
+	...	${column_source_id}	ColumnFormatId	@{list_variables}[1]	IsHidden	@{list_variables}[2]	Position
+	...	@{list_variables}[3]	${other_param_list}				
+							
+Create RunList for RunList Manager using list	[Arguments]	${list_type}					
+	${template_id}	Get matching Record Id	${RUNLIST_MANAGER_CURR}.RUN_TEMPLATE.${RUNLIST_MANAGER_SRC}.RUN_TEMPLATE	${template_name}			
+	${group_id}	Get matching Record Id	${RUNLIST_MANAGER_CURR}.RECIPIENT_GROUPS.${RUNLIST_MANAGER_SRC}.RECIPIENT_GROUPS	${recipient_group}			
+	Comment	createRunListForRLM	${run_list_name}	InstrumentGroup	RUN_LIST_DEMO	MessageSubject	${run_list_name}
+	...	SenderName	Ankit	SenderAddress	ankit.jain@iontrading.com	RecipientGroups	${group_id}
+	...	ListType	RUN	TemplateId	${template_id}		
+	createRunListForRLM	${run_list_name}	InstrumentGroup	${INSTR_GROUP_IN_RLM}	MessageSubject	${run_list_name}	SenderName
+	...	${SENDER_NAME}	SenderAddress	${SENDER_ADDRESS}	RecipientGroups	${group_id}	ListType
+	...	${list_type}	TemplateId	${template_id}			
+							
+Create Recipient for RunList	[Arguments]	${reciepient_var_list}					
+	${reciepient_var_list_str}	Convert list To String	${reciepient_var_list}				
+	@{variable_list_str}	split string	${reciepient_var_list_str}	:			
+	${list_content_str}	set variable	${EMPTY}				
+	${length_of_list}=	Get Length	${variable_list_str}				
+	${i}=	Set Variable	0				
+	${other_param_list}	Run keyword if	${length_of_list} > 4	Get Slice From List	${variable_list_str}	4	
+	...	ELSE	Create list	${EMPTY}			
+	${length_of_param_list}=	Get Length	${other_param_list}				
+	: FOR	${i}	IN RANGE	0	${length_of_list}		
+		${list_content_str}=	set variable	@{variable_list_str}[${i}]			
+		@{list_variables}	split string	${list_content_str}	,		
+		Run keyword if	${length_of_param_list} == 1	createRecipientForRLM	@{list_variables}[0]	Address	@{list_variables}[1]
+		...	SpeedDial	@{list_variables}[2]	UUID	@{list_variables}[3]	
+		...	ELSE	createRecipientForRLM	@{list_variables}[0]	Address	@{list_variables}[1]
+		...	SpeedDial	@{list_variables}[2]	UUID	@{list_variables}[3]	${other_param_list}
+		Comment	Log	${list_variables}	level=WARN		
+							
+Add reciepient in Recipient group	[Arguments]	${recipient_var_list}					
+	${group_id}	Get matching Record Id	ALL.RECIPIENT_GROUPS.RUN_LIST_MANAGER.RECIPIENT_GROUPS	${recipient_group}			
+	${recipient_var_list_str}	Convert list To String	${recipient_var_list}				
+	@{variable_list_str}	split string	${recipient_var_list_str}	:			
+	${list_content_str}	set variable	${EMPTY}				
+	${length_of_list}=	Get Length	${variable_list_str}				
+	${i}=	Set Variable	0				
+	${other_param_list}	Run keyword if	${length_of_list} > 4	Get Slice From List	${variable_list_str}	4	
+	...	ELSE	Create list	${EMPTY}			
+	${length_of_param_list}=	Get Length	${other_param_list}				
+	${recipents_in_grp}	set variable	${EMPTY}				
+	: FOR	${i}	IN RANGE	0	${length_of_list}		
+		${list_content_str}=	set variable	@{variable_list_str}[${i}]			
+		@{list_variables}	split string	${list_content_str}	,		
+		${recipient_id}	Get matching Record Id	${RUNLIST_MANAGER_CURR}.RECIPIENTS.${RUNLIST_MANAGER_SRC}.RECIPIENTS	@{list_variables}[0]		
+		${recipents_in_grp}	Run keyword if	${i} == 0	replace string	${recipents_in_grp}	${empty}
+		...	${recipient_id}				
+		...	ELSE	catenate	SEPARATOR=,	${recipents_in_grp}	${recipient_id}
+	updateRecipientGroupForRLM	${group_id}	Recipients	${recipents_in_grp}			
+							
+Perform manual trade and check positions and prices in Tradeserver and RLM chain	[Arguments]	${instr_qty_pair}	${instr_value_pair}	${Verb}	${ts_trdstatusstr}	${ts_calcstatusstr}	${pos_instr_position_pair}
+	...	${pos_postypestr}	${pos_statusstr}	${run_instr_position_pair}	${run_axe_status}	${run_subs_status}	${Run_AskCap}
+	...	${Run_BidCap}	${Run_AskOverridePosition}	${Run_BidOverridePosition}	# ${instr_type} | ${coupon_type} | ${value} | ${value_type} | ${trd_value} | ${verb} | ${trd_qty} | ${ts_price} | ${ts_yield} | ${ts_discount} | ${ts_discountmargin} | ${ts_trdstatusstr} | ${ts_calcstatusstr} | ${pos_nettradingpos} | ${pos_postypestr} | ${pos_statusstr} | ${risk_pospnl} | ${risk_tradingpnl} | ${risk_netpnl} | ${risk_statusstr}		
+	@{instr_qty_list}	split string	${instr_qty_pair}	,			
+	@{instr_value_list}	split string	${instr_value_pair}	,			
+	@{instr_position_list}	split string	${pos_instr_position_pair}	,			
+	@{run_instr_position_list}	split string	${run_instr_position_pair}	,			
+	${list_length}	get length	${instr_qty_list}				
+	: FOR	${i}	IN RANGE	0	${list_length}		
+		${trd_value}	fetch from right	@{instr_value_list}[${i}]	:		
+		${list_qty_pair}	set variable	@{instr_qty_list}[${i}]			
+		${instr_tag}	fetch from left	${list_qty_pair}	:		
+		${trd_qty}	fetch from right	${list_qty_pair}	:		
+		${pos_nettradingpos}	fetch from right	@{instr_position_list}[${i}]	:		
+		${run_pos_nettradingpos}	fetch from right	@{run_instr_position_list}[${i}]	:		
+		${instr_id}	Get From Dictionary	${Dict}	${instr_tag}		
+		${value_type}	Get Field Value From Record	${COMMON REFDATA SRC}	${COMMON REFDATA CURR}	CM_INSTRUMENT	${instr_id}
+		...	ValueTypeStr	10			
+		Append To List	${list_instr_id}	${instr_id}			
+		Feed Refdata Instrument To PXE	${instr_id}				
+		Price instrument in PXE	${instr_id}	${trd_value}	${value_type}		
+		${trade_id}=	Create Manual Trade	${COMMON MKVUSER}	${instr_id}	${BOOKID}	${trd_value}
+		...	${value_type}	${verb}	${trd_qty}		
+		Verify Tradeserver Fields	${trade_id}	Price	${trd_value}	TradeStatusStr	${ts_trdstatusstr}
+		...	CalcStatusStr	${ts_calcstatusstr}			
+		Verify Position Fields	${BOOKID}	${instr_id}	${trade_id}	NetTradingPos	${pos_nettradingpos}
+		...	PositionTypeStr	${pos_postypestr}	StatusStr	${pos_statusstr}	
+		DPlayer	Record Transaction	${RUNLIST_MANAGER_CURR}.RUN_AXE.${RUNLIST_MANAGER_SRC}.${instr_id}	BookId	${BOOKID}	
+		verifyRunListFields	${instr_id}	Position	${run_pos_nettradingpos}	Status	${run_axe_status}
+		...	SubscriptionStatus	${run_subs_status}	AskCap	${Run_AskCap}	BidCap
+		...	${Run_BidCap}	AskOverridePosition	${Run_AskOverridePosition}	BidOverridePosition	${Run_BidOverridePosition}
+	Comment	Verify Risk Fields	${BOOKID}	${instr_id}	${trade_id}	PosPnl	${risk_pospnl}
+	...	TradingPnl	${risk_tradingpnl}	NetPnl	${risk_netpnl}	StatusStr	${risk_statusstr}
+	Comment	Verify Tradeserver Fields	${trade_id}	Price	${ts_price}	Yield	${ts_yield}
+	...	Discount	${ts_discount}	DiscountMargin	${ts_discountmargin}	TradeStatusStr	${ts_trdstatusstr}
+	...	CalcStatusStr	${ts_calcstatusstr}				
+							
+get Instruments from instrument group	[Arguments]	${instr_group}					
+	${length_of_instr_type}=	Get Length	${instrument_type_list}				
+	: FOR	${i}	IN RANGE	0	${length_of_instr_type}		
+		${external_instr_id}=	Select Correct Instrument To Import	@{instrument_type_list}[${i}]	@{coupon_type_list}[${i}]		
+		${instr_already_imported}=	Check If Instrument Already Imported	${external_instr_id}			
+		${instr_id}=	Run Keyword If	'${instr_already_imported}' == 'False'	Import Instrument and Feed to PXE	${external_instr_id}	
+		...	ELSE	Get Refdata Instrument Id For Imported Instrument	${external_instr_id}		
+		Append To List	${list_instr_id}	${instr_id}			
+		Comment	log	${list_instr_id}	level=WARN		
+	Add instrument in instrument group	${instr_group}	@{list_instr_id}				
+	${ChainName}	Chain Define	${COMMON REFDATA SRC}	CM_INSTRUMENT	${COMMON REFDATA CURR}	INSTRUMENTGROUP_${instr_group}	
+	Chain set Timeout	${ChainName}	10s				
+	@{InstrumentListRec}	Chain Subscribe Waiting Snapshot Records	${ChainName}				
+	${instrumentShortList}	Get Slice From List	${InstrumentListRec}	0	4		
+	${length_of_instr_list}=	Get Length	${instrumentShortList}				
+	${recipents_in_grp}	set variable	${EMPTY}				
+	${dict}=	Create Dictionary	${EMPTY}=${EMPTY}				
+	:FOR	${i}	IN RANGE	0	${length_of_instr_list}		
+		${instr}	fetch from right	@{instrumentShortList}[${i}]	.		
+		Set To Dictionary	${dict}	Instr${i}=${instr}			
+		${d1}	Get From Dictionary	${dict}	Instr${i}		
+	${values}	Get Dictionary Values	${dict}				
+	set suite variable	${dict}					
+							
+Delete Recipient for RunList	[Arguments]	${reciepient_var_list}					
+	${reciepient_var_list_str}	Convert list To String	${reciepient_var_list}				
+	@{variable_list_str}	split string	${reciepient_var_list_str}	:			
+	${list_content_str}	set variable	${EMPTY}				
+	${length_of_list}=	Get Length	${variable_list_str}				
+	: FOR	${i}	IN RANGE	0	${length_of_list}		
+		${list_content_str}=	set variable	@{variable_list_str}[${i}]			
+		@{list_variables}	split string	${list_content_str}	,		
+		${reciepient_id}	Get matching Record Id	${RUNLIST_MANAGER_CURR}.RECIPIENTS.${RUNLIST_MANAGER_SRC}.RECIPIENTS	@{list_variables}[0]		
+		deleteRecipientFromRLM	${reciepient_id}				
+							
+Delete RunList from RunList Manager	${run_list_id}	Get matching Record Id	${RUNLIST_MANAGER_CURR}.RUN_LIST.${RUNLIST_MANAGER_SRC}.RUN_LIST	${run_list_name}			
+	deleteRunListForRLM	${run_list_id}					
+							
+delete template for runlist	[Arguments]	${run_list_template}					
+	${template_id}	Get matching Record Id	${RUNLIST_MANAGER_CURR}.RUN_TEMPLATE.${RUNLIST_MANAGER_SRC}.RUN_TEMPLATE	${run_list_template}			
+	deleteTemplateForRLM	${template_id}					
+							
+delete column Source from runlist	[Arguments]	${column_source_var_list}					
+	${column_source_var_list_str}	Convert list To String	${column_source_var_list}				
+	@{variable_list_str}	split string	${column_source_var_list_str}	:			
+	${list_content_str}	set variable	${EMPTY}				
+	${length_of_list}=	Get Length	${variable_list_str}				
+	: FOR	${i}	IN RANGE	0	${length_of_list}		
+		${list_content_str}=	set variable	@{variable_list_str}[${i}]			
+		@{list_variables}	split string	${list_content_str}	,		
+		${column_source_id}	Get matching Record Id	${RUNLIST_MANAGER_CURR}.RUN_COLUMN_SOURCE.${RUNLIST_MANAGER_SRC}.COLUMN_SOURCE	@{list_variables}[0]		
+		deleteColumnSourceForRLM	${column_source_id}				
+							
+Delete Column from Runlist	[Arguments]	${column_var_list}					
+	${column_var_list_str}	Convert list To String	${column_var_list}				
+	@{variable_list_str}	split string	${column_var_list_str}	:			
+	${list_content_str}	set variable	${EMPTY}				
+	${length_of_list}=	Get Length	${variable_list_str}				
+	Comment	Log	${length_of_list} length	level=WARN			
+	${i}=	Set Variable	0				
+	: FOR	${i}	IN RANGE	0	${length_of_list}		
+		${list_content_str}=	set variable	@{variable_list_str}[${i}]			
+		@{list_variables}	split string	${list_content_str}	,		
+		${column_id}	Get matching Record Id	${RUNLIST_MANAGER_CURR}.RUN_COLUMN.${RUNLIST_MANAGER_SRC}.COLUMN	@{list_variables}[0]		
+		deleteColumnForRLM	@{list_variables}[0]				
+							
+Add instrument in instrument group	[Arguments]	${Instr_grp_to_add}	@{instr_list_to_add}				
+	${length_of_list}=	Get Length	${instr_list_to_add}				
+	Comment	Log	${length_of_list}=lenlist	level=WARN			
+	${i}=	Set Variable	0				
+	${list_content_str}=	set variable	@{instr_list_to_add}[0]				
+	: FOR	${i}	IN RANGE	1	${length_of_list}		
+		${list_content_str}=	catenate	${list_content_str}	@{instr_list_to_add}[${i}]		
+		Comment	Log	content list ${list_content_str}	level=WARN		
+	addInstrumentGrp	${Instr_grp_to_add}	${Instr_grp_to_add}	${EMPTY}	0		
+	builtin.sleep	5s					
+	addInstrumentInInstrumentGrp	${Instr_grp_to_add}	${list_content_str}				

@@ -1,0 +1,6 @@
+*Variables*							
+@{column_list}	TestBidPrice	TBPc	String_Right_2	PRICE	REAL	Buy	:
+...	TestAskPrice	TAPc	String_Right_2	PRICE	REAL	Sell	:
+...	TestAskSize	TASz	String_Right_2	Size	REAL	Sell	:
+...	TestBidSize	TBSz	String_Right_2	Size	REAL	Buy	:
+...	TestSecurity	TBond	String_Right_2	UNDEF	STR	Undef	# ColumnName|Alias|PriceType|ValueType|verb:
